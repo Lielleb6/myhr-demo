@@ -36,12 +36,18 @@ components.html("""
         --blue-tint:   #e8f1fc;
         --line:        #e7ebf1;
     }
-    * { box-sizing: border-box; }
+    * { 
+        box-sizing: border-box; 
+        -webkit-user-select: none; /* מונע סימון טקסט כמו בדפדפן */
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
     
     body {
         margin: 0; padding: 0; background: var(--paper);
         font-family: 'Assistant', sans-serif; overflow: hidden; color: var(--ink);
         -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: none; /* מבטל את אפקט הגלילה של הדפדפן למעלה/למטה */
     }
 
     #desktop-view-warning { display: none; }
@@ -62,6 +68,7 @@ components.html("""
         width: 100vw; height: 100vh; max-width: 480px; margin: 0 auto;
         background: var(--paper); display: flex; flex-direction: column; position: relative;
         overflow: hidden;
+        overscroll-behavior: none;
     }
 
     @keyframes pulse {
@@ -103,7 +110,6 @@ components.html("""
     .greeting-org  { font-size: 13px; font-weight: 600; opacity: 0.92; }
     .greeting-unit { font-size: 11.5px; opacity: 0.7; font-weight: 500; }
 
-    /* לוגו משודרג ומעוצב ברמת מותג פሪמיום */
     .brand-logo-badge {
         display: flex; align-items: center; gap: 12px;
         background: rgba(255, 255, 255, 0.12);
@@ -128,8 +134,11 @@ components.html("""
         text-transform: uppercase;
     }
 
+    /* אזור תוכן גלל כמו באפליקציה מקורית */
     .view-container {
         flex: 1; overflow-y: auto; padding: 16px 16px 95px 16px; display: none;
+        -webkit-overflow-scrolling: touch; /* גלילה חלקה של אייפון/אנדרואיד */
+        overscroll-behavior-y: contain;
     }
     .view-container.active-view { display: block; }
 
@@ -146,7 +155,10 @@ components.html("""
         margin-bottom: 12px; border: 1px solid var(--line);
         box-shadow: 0 2px 4px rgba(16,26,43,0.02), 0 10px 24px -12px rgba(16,26,43,0.1);
         display: flex; align-items: center; justify-content: space-between;
+        transition: transform 0.1s ease;
     }
+    .card:active { transform: scale(0.98); } /* אפקט לחיצה של אפליקציה */
+
     .card-label { font-size: 14px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
     .card-value { font-size: 24px; font-weight: 900; color: var(--ink); line-height: 1.1; }
     .card-sub   { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; font-weight: 500; line-height: 1.4; }
@@ -219,7 +231,7 @@ components.html("""
 
     <div id="app">
 
-        <!-- Header עם הלוגו המושדרג (נגיש. מדויק. ממצה.) -->
+        <!-- Header -->
         <div class="header">
             <svg class="header-arcs" width="200" height="200" viewBox="0 0 220 220" fill="none">
                 <circle cx="20" cy="20" r="40" stroke="white" stroke-width="1.4"/>
@@ -238,7 +250,6 @@ components.html("""
                     </div>
                 </div>
                 
-                <!-- לוגו משודרג עם טלפון, אבטחה, חדשנות והכיתוב המבוקש באנגלית -->
                 <div class="brand-logo-badge" dir="ltr">
                     <div class="logo-graphic">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
