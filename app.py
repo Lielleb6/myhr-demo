@@ -3,16 +3,14 @@ import streamlit as st
 # הגדרת העמוד - ממורכז כדי שהטלפון יישב באמצע המסך
 st.set_page_config(page_title="MyHR+ Elbit Demo", layout="centered")
 
-# הזרקת עיצוב מותאם אישית (CSS) כדי לדרוס את המראה של Streamlit ולייצר אפליקציה
+# הזרקת עיצוב מותאם אישית (CSS) 
 css = """
 <style>
-    /* הסתרת התפריטים של Streamlit */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
     .block-container { max-width: 450px !important; padding-top: 1rem !important; }
     
-    /* הגדרות המסגרת של הטלפון */
     .mobile-wrapper {
         width: 100%;
         max-width: 380px;
@@ -25,10 +23,9 @@ css = """
         position: relative;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         direction: rtl;
-        border: 8px solid #333; /* מסגרת שחורה כמו טלפון */
+        border: 8px solid #333;
     }
 
-    /* החלק העליון הכחול של אלביט */
     .app-header {
         background: linear-gradient(135deg, #003366 0%, #004080 100%);
         color: white;
@@ -43,11 +40,10 @@ css = """
     
     .face-id { width: 30px; height: 30px; opacity: 0.9; margin-top: 5px; }
 
-    /* אזור התוכן הלבן */
     .main-content {
         background: white;
         border-radius: 20px 20px 0 0;
-        margin-top: -30px; /* עולה על החלק הכחול */
+        margin-top: -30px;
         height: calc(100% - 150px);
         display: flex;
         flex-direction: column;
@@ -60,7 +56,6 @@ css = """
 
     .cards-container { padding: 15px; background-color: #f4f5f8; flex-grow: 1; overflow-y: auto; padding-bottom: 80px;}
 
-    /* עיצוב הכרטיסיות */
     .card {
         background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.04); border: 1px solid #eaeaea;
@@ -74,7 +69,6 @@ css = """
     .card-value { font-size: 22px; font-weight: 800; color: #000; margin-bottom: 2px; }
     .card-subtitle { font-size: 11px; color: #777; }
 
-    /* העיגול הירוק */
     .circle-chart {
         width: 60px; height: 60px; border-radius: 50%;
         border: 5px solid #e0e0e0; border-right-color: #10b981; border-top-color: #10b981;
@@ -83,17 +77,14 @@ css = """
     .circle-val { font-size: 20px; font-weight: bold; line-height: 1; }
     .circle-label { font-size: 10px; color: #666; }
 
-    /* אייקון סיבוס */
     .cibus-icon { width: 50px; height: 50px; background: #e0f2fe; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; }
 
-    /* כפתור תלוש */
     .btn-outline {
         width: 100%; padding: 10px; border: 1px solid #004080; border-radius: 6px;
         background: transparent; color: #004080; font-weight: bold; font-size: 13px;
         margin-top: 15px; cursor: pointer;
     }
 
-    /* תפריט ניווט תחתון */
     .bottom-nav {
         position: absolute; bottom: 0; width: 100%; background: white;
         display: flex; justify-content: space-around; padding: 12px 0 20px 0;
@@ -103,9 +94,6 @@ css = """
     .nav-item.active { color: #004080; font-weight: bold; }
     .nav-icon { font-size: 20px; margin-bottom: 3px; }
 
-    /* ================================= */
-    /* עיצוב חלון קופץ (Pop-up) - התראה */
-    /* ================================= */
     .alert-overlay {
         position: absolute; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
@@ -113,7 +101,7 @@ css = """
     }
     .alert-box {
         background: white; width: 85%; border-radius: 12px;
-        box-shadow: 0 0 0 3px #00a3ff, 0 0 30px rgba(0, 163, 255, 0.6); /* הזוהר התכלת */
+        box-shadow: 0 0 0 3px #00a3ff, 0 0 30px rgba(0, 163, 255, 0.6);
         overflow: hidden;
     }
     .alert-header {
@@ -129,10 +117,8 @@ css = """
 </style>
 """
 
-# הזרקת ה-CSS לאפליקציה
 st.markdown(css, unsafe_allow_html=True)
 
-# תפריט מנהלים למעלה (כדי שתוכל להחליף מסכים בדמו)
 st.write("⚙️ **פאנל שליטה לדמו (לא ייראה על ידי המשתמש):**")
 col1, col2 = st.columns(2)
 with col1:
@@ -140,139 +126,128 @@ with col1:
 with col2:
     btn_alert = st.button("⚠️ הצג התראה (מיכל)", use_container_width=True)
 
-# שמירת המצב הנוכחי
 if 'current_view' not in st.session_state:
     st.session_state.current_view = 'dashboard'
 
 if btn_dashboard: st.session_state.current_view = 'dashboard'
 if btn_alert: st.session_state.current_view = 'alert'
 
-# ==========================================
-# קוד ה-HTML שמצייר את המסכים
-# ==========================================
-
-# 1. תצוגת דשבורד (דניאל)
+# התיקון: בלוק ה-HTML ללא הזחות כדי ש-Streamlit לא יהפוך אותו לטקסט
 if st.session_state.current_view == 'dashboard':
     html = """
-    <div class="mobile-wrapper">
-        <div class="app-header">
-            <div class="header-text">
-                <h1>שלום, דניאל <span>MyHR+</span></h1>
-                <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
-            </div>
-            <div class="face-id">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-            </div>
+<div class="mobile-wrapper">
+    <div class="app-header">
+        <div class="header-text">
+            <h1>שלום, דניאל <span>MyHR+</span></h1>
+            <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
         </div>
-        
-        <div class="main-content">
-            <div class="dashboard-title">הדשבורד האישי שלי</div>
-            
-            <div class="cards-container">
-                <!-- כרטיסייה 1 -->
-                <div class="card">
-                    <div class="card-icon-area">
-                        <div class="circle-chart">
-                            <span class="circle-val">12</span>
-                            <span class="circle-label">ימים</span>
-                        </div>
-                    </div>
-                    <div class="card-text-area">
-                        <div class="card-title">יתרת חופשה</div>
-                        <div class="card-value">12 ימים</div>
-                        <div class="card-subtitle">מתוך 20 ימים שנתיים</div>
-                    </div>
-                </div>
-                
-                <!-- כרטיסייה 2 -->
-                <div class="card">
-                    <div class="card-icon-area">
-                        <div class="cibus-icon">🍽️</div>
-                    </div>
-                    <div class="card-text-area">
-                        <div class="card-title">יתרת סיבוס (Cibus)</div>
-                        <div class="card-value">₪450</div>
-                        <div class="card-subtitle">היתרה לספטמבר</div>
-                    </div>
-                </div>
-                
-                <!-- כרטיסייה 3 -->
-                <div class="card" style="display: block;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div class="card-text-area">
-                            <div class="card-title">עדכון שכר</div>
-                            <div class="card-subtitle">עדכון שכר בהפצה<br>האחרון</div>
-                        </div>
-                        <div style="width: 100px; height: 50px; display: flex; align-items: flex-end; justify-content: space-between;">
-                            <div style="width: 10px; height: 20%; background: #ccc; border-radius: 2px;"></div>
-                            <div style="width: 10px; height: 40%; background: #ccc; border-radius: 2px;"></div>
-                            <div style="width: 10px; height: 30%; background: #ccc; border-radius: 2px;"></div>
-                            <div style="width: 10px; height: 50%; background: #ccc; border-radius: 2px;"></div>
-                            <div style="width: 10px; height: 60%; background: #ccc; border-radius: 2px;"></div>
-                            <div style="width: 10px; height: 85%; background: #10b981; border-radius: 2px; position: relative;">
-                                <span style="position: absolute; top: -18px; right: -2px; color: #10b981; font-weight: bold;">↑</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn-outline">צפייה בתלוש האחרון</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bottom-nav">
-            <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
-            <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
-            <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
-            <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+        <div class="face-id">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
         </div>
     </div>
-    """
+    
+    <div class="main-content">
+        <div class="dashboard-title">הדשבורד האישי שלי</div>
+        
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-icon-area">
+                    <div class="circle-chart">
+                        <span class="circle-val">12</span>
+                        <span class="circle-label">ימים</span>
+                    </div>
+                </div>
+                <div class="card-text-area">
+                    <div class="card-title">יתרת חופשה</div>
+                    <div class="card-value">12 ימים</div>
+                    <div class="card-subtitle">מתוך 20 ימים שנתיים</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon-area">
+                    <div class="cibus-icon">🍽️</div>
+                </div>
+                <div class="card-text-area">
+                    <div class="card-title">יתרת סיבוס (Cibus)</div>
+                    <div class="card-value">₪450</div>
+                    <div class="card-subtitle">היתרה לספטמבר</div>
+                </div>
+            </div>
+            
+            <div class="card" style="display: block;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="card-text-area">
+                        <div class="card-title">עדכון שכר</div>
+                        <div class="card-subtitle">עדכון שכר בהפצה<br>האחרון</div>
+                    </div>
+                    <div style="width: 100px; height: 50px; display: flex; align-items: flex-end; justify-content: space-between;">
+                        <div style="width: 10px; height: 20%; background: #ccc; border-radius: 2px;"></div>
+                        <div style="width: 10px; height: 40%; background: #ccc; border-radius: 2px;"></div>
+                        <div style="width: 10px; height: 30%; background: #ccc; border-radius: 2px;"></div>
+                        <div style="width: 10px; height: 50%; background: #ccc; border-radius: 2px;"></div>
+                        <div style="width: 10px; height: 60%; background: #ccc; border-radius: 2px;"></div>
+                        <div style="width: 10px; height: 85%; background: #10b981; border-radius: 2px; position: relative;">
+                            <span style="position: absolute; top: -18px; right: -2px; color: #10b981; font-weight: bold;">↑</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-outline">צפייה בתלוש האחרון</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
+        <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+    </div>
+</div>
+"""
 
-# 2. תצוגת התראה (מיכל)
 elif st.session_state.current_view == 'alert':
     html = """
-    <div class="mobile-wrapper">
-        <div class="app-header">
-            <div class="header-text">
-                <h1>בוקר טוב, מיכל <span>MyHR+</span></h1>
-                <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
-            </div>
-            <div class="face-id">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-            </div>
+<div class="mobile-wrapper">
+    <div class="app-header">
+        <div class="header-text">
+            <h1>בוקר טוב, מיכל <span>MyHR+</span></h1>
+            <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
         </div>
-        
-        <div class="main-content" style="opacity: 0.6; pointer-events: none;">
-            <div class="cards-container">
-                <div class="card"><div style="height: 60px;"></div></div>
-                <div class="card"><div style="height: 60px;"></div></div>
-            </div>
-        </div>
-        
-        <!-- השכבה של ההתראה שקופצת מעל הכל -->
-        <div class="alert-overlay">
-            <div class="alert-box">
-                <div class="alert-header">
-                    <span style="margin-left: 8px; color: #ffd700;">⚠️</span> התראה חשובה מ- MyHR+ AI
-                </div>
-                <div class="alert-body">
-                    <div class="alert-text">
-                        <strong>מיכל</strong>, שמנו לב שעדיין לא ניצלת את סבסוד הלימודים השנתי שלך (עד ₪3,000)!<br><br>
-                        תוקף הזכאות פג בעוד 3 ימים (30.09.24).
-                    </div>
-                    <button class="alert-btn">למימוש הזכות עכשיו בלחיצה</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
-            <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
-            <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
-            <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+        <div class="face-id">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
         </div>
     </div>
-    """
+    
+    <div class="main-content" style="opacity: 0.6; pointer-events: none;">
+        <div class="cards-container">
+            <div class="card"><div style="height: 60px;"></div></div>
+            <div class="card"><div style="height: 60px;"></div></div>
+        </div>
+    </div>
+    
+    <div class="alert-overlay">
+        <div class="alert-box">
+            <div class="alert-header">
+                <span style="margin-left: 8px; color: #ffd700;">⚠️</span> התראה חשובה מ- MyHR+ AI
+            </div>
+            <div class="alert-body">
+                <div class="alert-text">
+                    <strong>מיכל</strong>, שמנו לב שעדיין לא ניצלת את סבסוד הלימודים השנתי שלך (עד ₪3,000)!<br><br>
+                    תוקף הזכאות פג בעוד 3 ימים (30.09.24).
+                </div>
+                <button class="alert-btn">למימוש הזכות עכשיו בלחיצה</button>
+            </div>
+        </div>
+    </div>
 
-# ציור התוצר הסופי על המסך
+    <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
+        <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+    </div>
+</div>
+"""
+
 st.markdown(html, unsafe_allow_html=True)
