@@ -103,26 +103,29 @@ components.html("""
     .greeting-org  { font-size: 13px; font-weight: 600; opacity: 0.92; }
     .greeting-unit { font-size: 11.5px; opacity: 0.7; font-weight: 500; }
 
-    /* לוגו גרפי מובנה המשלב צורה של סמל אפליקציה חדשני עם טלפון, אבטחה וחדשנות */
+    /* לוגו משודרג ומעוצב ברמת מותג פሪמיום */
     .brand-logo-badge {
-        display: flex; align-items: center; gap: 10px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 8px 12px; border-radius: 16px;
-        backdrop-filter: blur(8px);
+        display: flex; align-items: center; gap: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 10px 14px; border-radius: 18px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .logo-graphic {
-        width: 36px; height: 36px; background: linear-gradient(135deg, #1f9d6b 0%, #1a5691 100%);
-        border-radius: 10px; display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; flex-shrink: 0;
+        width: 42px; height: 42px; background: linear-gradient(135deg, #2ecc71 0%, #1a5691 100%);
+        border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 10px rgba(0,0,0,0.3);
+        position: relative; flex-shrink: 0;
     }
     .logo-text-col { display: flex; flex-direction: column; text-align: left; }
     .brand-main-text {
-        font-size: 26px; font-weight: 900; letter-spacing: 0.5px; line-height: 1; color: #ffffff;
+        font-size: 28px; font-weight: 900; letter-spacing: 0.8px; line-height: 1; color: #ffffff;
     }
     .brand-main-text span { color: #6fd9b5; }
     .brand-tagline {
-        font-size: 9px; font-weight: 700; color: #b9d3ec; letter-spacing: 0.5px; margin-top: 2px;
+        font-size: 9.5px; font-weight: 700; color: #b9d3ec; letter-spacing: 0.6px; margin-top: 3px;
+        text-transform: uppercase;
     }
 
     .view-container {
@@ -216,7 +219,7 @@ components.html("""
 
     <div id="app">
 
-        <!-- Header עם לוגו גרפי מעוצב (כולל סמליל טלפון, מגן אבטחה וחדשנות) -->
+        <!-- Header עם הלוגו המושדרג (נגיש. מדויק. ממצה.) -->
         <div class="header">
             <svg class="header-arcs" width="200" height="200" viewBox="0 0 220 220" fill="none">
                 <circle cx="20" cy="20" r="40" stroke="white" stroke-width="1.4"/>
@@ -235,11 +238,10 @@ components.html("""
                     </div>
                 </div>
                 
-                <!-- לוגו גרפי מרהיב המשלב את כל הדרישות -->
+                <!-- לוגו משודרג עם טלפון, אבטחה, חדשנות והכיתוב המבוקש באנגלית -->
                 <div class="brand-logo-badge" dir="ltr">
                     <div class="logo-graphic">
-                        <!-- אייקון משולב: מגן אבטחה שבתוכו טלפון וניצוץ חדשנות -->
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                             <rect x="9" y="8" width="6" height="10" rx="1"/>
                             <line x1="12" y1="15" x2="12" y2="15.01"/>
@@ -247,7 +249,7 @@ components.html("""
                     </div>
                     <div class="logo-text-col">
                         <div class="brand-main-text">MyHR<span>+</span></div>
-                        <div class="brand-tagline">MOBILE • SECURE • SMART</div>
+                        <div class="brand-tagline">Accessible • Precise • Comprehensive</div>
                     </div>
                 </div>
             </div>
