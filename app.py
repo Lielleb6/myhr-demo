@@ -86,22 +86,37 @@ components.html("""
     .header {
         position: relative; overflow: hidden; flex-shrink: 0;
         background: linear-gradient(160deg, var(--navy-light) 0%, var(--navy) 55%, var(--navy-deep) 100%);
-        color: #fff; padding: 26px 20px 32px 20px;
+        color: #fff; padding: 24px 18px 28px 18px;
         border-bottom-right-radius: 28px; border-bottom-left-radius: 28px;
         box-shadow: 0 8px 20px -6px rgba(6, 30, 58, 0.35);
     }
     .header-arcs { position: absolute; top: -40px; left: -60px; opacity: 0.14; pointer-events: none; }
-    .header-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+    
+    .user-greeting { display: flex; align-items: flex-start; gap: 10px; }
     .avatar-badge {
-        width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
+        width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
         background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.24);
         display: flex; align-items: center; justify-content: center;
     }
-    .greeting-name { font-size: 21px; font-weight: 800; letter-spacing: 0.2px; margin-bottom: 2px; }
-    .greeting-org  { font-size: 14px; font-weight: 600; opacity: 0.92; }
-    .greeting-unit { font-size: 12.5px; opacity: 0.7; font-weight: 500; }
-    .brand-mark { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; opacity: 0.96; }
-    .brand-mark span { color: #6fd9b5; }
+    .greeting-name { font-size: 19px; font-weight: 800; letter-spacing: 0.2px; margin-bottom: 1px; }
+    .greeting-org  { font-size: 13px; font-weight: 600; opacity: 0.92; }
+    .greeting-unit { font-size: 11.5px; opacity: 0.7; font-weight: 500; }
+
+    /* לוגו חדשני עם סמליל אבטחה, טלפון וחדשנות */
+    .brand-logo-container {
+        display: flex; flex-direction: column; align-items: flex-end; text-align: left;
+    }
+    .brand-main-text {
+        font-size: 30px; font-weight: 900; letter-spacing: 1px; line-height: 1; color: #ffffff;
+    }
+    .brand-main-text span { color: #6fd9b5; }
+    .brand-icons-row {
+        display: flex; align-items: center; gap: 6px; margin-top: 4px; opacity: 0.9;
+    }
+    .brand-tagline {
+        font-size: 9.5px; font-weight: 600; color: #b9d3ec; letter-spacing: 0.5px; margin-top: 2px;
+    }
 
     .view-container {
         flex: 1; overflow-y: auto; padding: 16px 16px 95px 16px; display: none;
@@ -194,6 +209,7 @@ components.html("""
 
     <div id="app">
 
+        <!-- Header עם לוגו מוגדל ומשולב (טלפון, אבטחה, חדשנות) -->
         <div class="header">
             <svg class="header-arcs" width="200" height="200" viewBox="0 0 220 220" fill="none">
                 <circle cx="20" cy="20" r="40" stroke="white" stroke-width="1.4"/>
@@ -201,7 +217,7 @@ components.html("""
                 <circle cx="20" cy="20" r="110" stroke="white" stroke-width="1.4"/>
             </svg>
             <div class="header-row">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div class="user-greeting">
                     <div class="avatar-badge">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
@@ -211,7 +227,20 @@ components.html("""
                         <div class="greeting-unit">חטיבה אווירית</div>
                     </div>
                 </div>
-                <div dir="ltr" class="brand-mark">MyHR<span>+</span></div>
+                
+                <!-- לוגו מעוצב מחדש לפי הדרישה -->
+                <div class="brand-logo-container">
+                    <div dir="ltr" class="brand-main-text">MyHR<span>+</span></div>
+                    <div class="brand-icons-row" dir="ltr">
+                        <!-- אייקון טלפון נייד -->
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        <!-- אייקון אבטחה (מגן) -->
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <!-- אייקון חדשנות (ניצוץ / הבקעה) -->
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                    </div>
+                    <div class="brand-tagline" dir="ltr">MOBILE • SECURE • SMART</div>
+                </div>
             </div>
         </div>
 
@@ -375,7 +404,6 @@ components.html("""
             <div class="eyebrow">ארכיון דיגיטלי</div>
             <div class="section-title">חוזים, תלושים ואישורים</div>
 
-            <!-- חוזה עבודה -->
             <div class="card">
                 <div style="text-align: right;">
                     <div class="card-label">חוזה עבודה אישי</div>
