@@ -1,155 +1,278 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 
-# 1. הגדרות תצוגה בסיסיות (חייב להיות בשורה הראשונה)
-st.set_page_config(page_title="MyHR+ Mobile", layout="wide", initial_sidebar_state="collapsed")
+# הגדרת העמוד - ממורכז כדי שהטלפון יישב באמצע המסך
+st.set_page_config(page_title="MyHR+ Elbit Demo", layout="centered")
 
-# 2. הזרקת עיצוב מתקדם (CSS) להתאמה למובייל ולמראה מודרני (Shadow Cards)
-st.markdown("""
+# הזרקת עיצוב מותאם אישית (CSS) כדי לדרוס את המראה של Streamlit ולייצר אפליקציה
+css = """
 <style>
-    /* כיווניות לימין והגדרת גופן מודרני */
-    .stApp {
-        direction: rtl;
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background-color: #f4f6f9;
-    }
-    
-    /* הסתרת התפריטים של Streamlit לתחושת אפליקציה נקייה */
+    /* הסתרת התפריטים של Streamlit */
     #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
     header {visibility: hidden;}
+    footer {visibility: hidden;}
+    .block-container { max-width: 450px !important; padding-top: 1rem !important; }
     
-    /* עיצוב כרטיסיות צפות (Cards) לנתונים */
-    div.css-1r6slb0, div.css-12w0qpk, div.stMetric {
-        background-color: #ffffff;
-        border-radius: 15px;
-        padding: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 10px;
-    }
-    
-    /* עיצוב כותרות אישיות */
-    h1, h2, h3 {
-        color: #0f172a;
-        font-weight: 700;
-    }
-    
-    /* עיצוב כפתורים */
-    .stButton>button {
+    /* הגדרות המסגרת של הטלפון */
+    .mobile-wrapper {
         width: 100%;
-        border-radius: 10px;
-        background-color: #0284c7;
-        color: white;
-        font-weight: bold;
-        border: none;
-        padding: 10px 0;
-        box-shadow: 0 4px 6px rgba(2, 132, 199, 0.2);
-        transition: all 0.3s;
+        max-width: 380px;
+        height: 750px;
+        margin: 0 auto;
+        background-color: #f0f2f5;
+        border-radius: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        overflow: hidden;
+        position: relative;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        direction: rtl;
+        border: 8px solid #333; /* מסגרת שחורה כמו טלפון */
     }
-    .stButton>button:hover {
-        background-color: #0369a1;
-        box-shadow: 0 6px 8px rgba(2, 132, 199, 0.3);
+
+    /* החלק העליון הכחול של אלביט */
+    .app-header {
+        background: linear-gradient(135deg, #003366 0%, #004080 100%);
+        color: white;
+        padding: 35px 20px 60px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    .header-text h1 { font-size: 20px; margin: 0; padding: 0; color: white; font-weight: bold; line-height: 1.2;}
+    .header-text h1 span { font-size: 16px; font-weight: normal; margin-right: 5px;}
+    .header-text p { font-size: 12px; margin: 8px 0 0 0; color: #b3d4ff; line-height: 1.4;}
+    
+    .face-id { width: 30px; height: 30px; opacity: 0.9; margin-top: 5px; }
+
+    /* אזור התוכן הלבן */
+    .main-content {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        margin-top: -30px; /* עולה על החלק הכחול */
+        height: calc(100% - 150px);
+        display: flex;
+        flex-direction: column;
     }
     
-    /* עיצוב לשוניות (Tabs) שיתאימו למגע בטלפון */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        justify-content: center;
-        background-color: white;
-        padding: 10px;
-        border-radius: 15px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    .dashboard-title {
+        text-align: center; font-size: 18px; font-weight: bold; color: #222;
+        padding: 15px 0; border-bottom: 1px solid #eee;
     }
-    .stTabs [data-baseweb="tab"] {
-        padding: 10px 16px;
-        border-radius: 10px;
+
+    .cards-container { padding: 15px; background-color: #f4f5f8; flex-grow: 1; overflow-y: auto; padding-bottom: 80px;}
+
+    /* עיצוב הכרטיסיות */
+    .card {
+        background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.04); border: 1px solid #eaeaea;
+        display: flex; align-items: center;
+    }
+    
+    .card-icon-area { width: 70px; display: flex; justify-content: center; align-items: center; margin-left: 15px; }
+    .card-text-area { flex-grow: 1; text-align: right; }
+    
+    .card-title { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 4px; }
+    .card-value { font-size: 22px; font-weight: 800; color: #000; margin-bottom: 2px; }
+    .card-subtitle { font-size: 11px; color: #777; }
+
+    /* העיגול הירוק */
+    .circle-chart {
+        width: 60px; height: 60px; border-radius: 50%;
+        border: 5px solid #e0e0e0; border-right-color: #10b981; border-top-color: #10b981;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    .circle-val { font-size: 20px; font-weight: bold; line-height: 1; }
+    .circle-label { font-size: 10px; color: #666; }
+
+    /* אייקון סיבוס */
+    .cibus-icon { width: 50px; height: 50px; background: #e0f2fe; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+
+    /* כפתור תלוש */
+    .btn-outline {
+        width: 100%; padding: 10px; border: 1px solid #004080; border-radius: 6px;
+        background: transparent; color: #004080; font-weight: bold; font-size: 13px;
+        margin-top: 15px; cursor: pointer;
+    }
+
+    /* תפריט ניווט תחתון */
+    .bottom-nav {
+        position: absolute; bottom: 0; width: 100%; background: white;
+        display: flex; justify-content: space-around; padding: 12px 0 20px 0;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top: 1px solid #eee;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #888; }
+    .nav-item.active { color: #004080; font-weight: bold; }
+    .nav-icon { font-size: 20px; margin-bottom: 3px; }
+
+    /* ================================= */
+    /* עיצוב חלון קופץ (Pop-up) - התראה */
+    /* ================================= */
+    .alert-overlay {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+        display: flex; justify-content: center; align-items: center; z-index: 100;
+    }
+    .alert-box {
+        background: white; width: 85%; border-radius: 12px;
+        box-shadow: 0 0 0 3px #00a3ff, 0 0 30px rgba(0, 163, 255, 0.6); /* הזוהר התכלת */
+        overflow: hidden;
+    }
+    .alert-header {
+        background: #003366; color: white; padding: 12px 15px;
+        font-weight: bold; font-size: 15px; display: flex; align-items: center;
+    }
+    .alert-body { padding: 20px; text-align: right; }
+    .alert-text { font-size: 14px; color: #222; line-height: 1.5; margin-bottom: 20px; }
+    .alert-btn {
+        width: 100%; background: #005bb5; color: white; padding: 12px;
+        border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer;
     }
 </style>
-""", unsafe_allow_html=True)
+"""
 
-# 3. כותרת האפליקציה (Header)
-st.markdown("<h2 style='text-align: center; color: #0284c7; margin-bottom: 0;'>📱 MyHR+</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 14px; color: #64748b; margin-top: -10px;'>מערכת חכמה לניהול משאבי אנוש ונוכחות</p>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-weight: bold; font-size: 12px; color: #475569; background-color: #e0f2fe; padding: 5px; border-radius: 20px; width: fit-content; margin: 0 auto 20px auto;'>משרד הרווחה והביטחון החברתי - מחוז חיפה והצפון</p>", unsafe_allow_html=True)
+# הזרקת ה-CSS לאפליקציה
+st.markdown(css, unsafe_allow_html=True)
 
-# 4. יצירת לשוניות ניווט מותאמות
-tab_personal, tab_admin, tab_ai = st.tabs(["👤 אזור אישי", "🏢 ניהול נוכחות ודירוגים", "🤖 עוזר חכם"])
+# תפריט מנהלים למעלה (כדי שתוכל להחליף מסכים בדמו)
+st.write("⚙️ **פאנל שליטה לדמו (לא ייראה על ידי המשתמש):**")
+col1, col2 = st.columns(2)
+with col1:
+    btn_dashboard = st.button("📱 הצג דשבורד (דניאל)", use_container_width=True)
+with col2:
+    btn_alert = st.button("⚠️ הצג התראה (מיכל)", use_container_width=True)
+
+# שמירת המצב הנוכחי
+if 'current_view' not in st.session_state:
+    st.session_state.current_view = 'dashboard'
+
+if btn_dashboard: st.session_state.current_view = 'dashboard'
+if btn_alert: st.session_state.current_view = 'alert'
 
 # ==========================================
-# לשונית 1: אזור אישי לעובד (תצוגת כרטיסיות מובייל)
+# קוד ה-HTML שמצייר את המסכים
 # ==========================================
-with tab_personal:
-    st.markdown("### 👋 בוקר טוב, ישראל")
-    st.caption("תקציר נתונים אישיים לחודש נוכחי")
-    
-    # שימוש ב-Container כדי לייצר מראה של כרטיסיה נפרדת
-    with st.container():
-        st.metric(label="🌴 יתרת חופשה שנתית", value="14.5 ימים", delta="מתוך 22 ימים", delta_color="off")
-    
-    with st.container():
-        st.metric(label="🤒 יתרת מחלה", value="42 ימים", delta="לא נוצלו ימי מחלה החודש", delta_color="normal")
+
+# 1. תצוגת דשבורד (דניאל)
+if st.session_state.current_view == 'dashboard':
+    html = """
+    <div class="mobile-wrapper">
+        <div class="app-header">
+            <div class="header-text">
+                <h1>שלום, דניאל <span>MyHR+</span></h1>
+                <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
+            </div>
+            <div class="face-id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+            </div>
+        </div>
         
-    with st.container():
-        st.metric(label="⏱️ שעות נוספות החודש", value="12.5 שעות", delta="אושר מראש: 15 שעות", delta_color="inverse")
-
-    st.markdown("<hr style='margin: 15px 0;'>", unsafe_allow_html=True)
-    st.markdown("#### 📄 דוחות אחרונים")
-    
-    # תפריט נפתח (Accordion) מותאם למובייל
-    with st.expander("📝 דוח נוכחות - אוקטובר"):
-        st.success("הדוח הוגש ואושר על ידי המנהל הישיר.")
-        st.button("הורד העתק PDF", key="btn_pdf1")
+        <div class="main-content">
+            <div class="dashboard-title">הדשבורד האישי שלי</div>
+            
+            <div class="cards-container">
+                <!-- כרטיסייה 1 -->
+                <div class="card">
+                    <div class="card-icon-area">
+                        <div class="circle-chart">
+                            <span class="circle-val">12</span>
+                            <span class="circle-label">ימים</span>
+                        </div>
+                    </div>
+                    <div class="card-text-area">
+                        <div class="card-title">יתרת חופשה</div>
+                        <div class="card-value">12 ימים</div>
+                        <div class="card-subtitle">מתוך 20 ימים שנתיים</div>
+                    </div>
+                </div>
+                
+                <!-- כרטיסייה 2 -->
+                <div class="card">
+                    <div class="card-icon-area">
+                        <div class="cibus-icon">🍽️</div>
+                    </div>
+                    <div class="card-text-area">
+                        <div class="card-title">יתרת סיבוס (Cibus)</div>
+                        <div class="card-value">₪450</div>
+                        <div class="card-subtitle">היתרה לספטמבר</div>
+                    </div>
+                </div>
+                
+                <!-- כרטיסייה 3 -->
+                <div class="card" style="display: block;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div class="card-text-area">
+                            <div class="card-title">עדכון שכר</div>
+                            <div class="card-subtitle">עדכון שכר בהפצה<br>האחרון</div>
+                        </div>
+                        <div style="width: 100px; height: 50px; display: flex; align-items: flex-end; justify-content: space-between;">
+                            <div style="width: 10px; height: 20%; background: #ccc; border-radius: 2px;"></div>
+                            <div style="width: 10px; height: 40%; background: #ccc; border-radius: 2px;"></div>
+                            <div style="width: 10px; height: 30%; background: #ccc; border-radius: 2px;"></div>
+                            <div style="width: 10px; height: 50%; background: #ccc; border-radius: 2px;"></div>
+                            <div style="width: 10px; height: 60%; background: #ccc; border-radius: 2px;"></div>
+                            <div style="width: 10px; height: 85%; background: #10b981; border-radius: 2px; position: relative;">
+                                <span style="position: absolute; top: -18px; right: -2px; color: #10b981; font-weight: bold;">↑</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-outline">צפייה בתלוש האחרון</button>
+                </div>
+            </div>
+        </div>
         
-    with st.expander("💰 תלוש שכר - ספטמבר"):
-        st.info("התלוש זמין לצפייה מאובטחת.")
-        st.button("לצפייה בתלוש", key="btn_salary")
+        <div class="bottom-nav">
+            <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
+            <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
+            <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+        </div>
+    </div>
+    """
 
-# ==========================================
-# לשונית 2: לוח בקרה מחוזי (מיועד לניהול רחב)
-# ==========================================
-with tab_admin:
-    st.markdown("### 📊 תמונת מצב - מנהל משאבי אנוש")
-    st.caption("נתוני נוכחות בזמן אמת עבור 524 עובדי המחוז")
-    
-    # בכוונה משתמשים בעמודות שיהפכו לשורות במובייל
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric(label="👥 סה״כ עובדים פעילים", value="524", delta="2 עובדים חדשים")
-    with col2:
-        st.metric(label="⏳ דוחות נוכחות חסרים", value="18", delta="חריגה מהיעד", delta_color="inverse")
+# 2. תצוגת התראה (מיכל)
+elif st.session_state.current_view == 'alert':
+    html = """
+    <div class="mobile-wrapper">
+        <div class="app-header">
+            <div class="header-text">
+                <h1>בוקר טוב, מיכל <span>MyHR+</span></h1>
+                <p>אלביט<br>אלביט מערכות - חטיבה אווירית</p>
+            </div>
+            <div class="face-id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+            </div>
+        </div>
         
-    with st.container():
-        st.metric(label="⭐ עדכוני דירוג שאושרו", value="94%", delta="היעד: 100% עד סוף החודש", delta_color="off")
-
-    st.markdown("#### אישור שעות חריגות לפי יחידה")
-    
-    # גרף עמודות אופקי שייראה טוב גם במסך צר
-    chart_data = pd.DataFrame({
-        'יחידה': ['לשכות רווחה', 'מנהלה ותפעול', 'פיקוח שטח', 'כספים', 'אגף קהילה'],
-        'שעות שאושרו': [120, 85, 210, 45, 90]
-    }).set_index('יחידה')
-    
-    st.bar_chart(chart_data, color="#0ea5e9")
-    
-    st.markdown("#### טיפול אדמיניסטרטיבי דחוף")
-    st.warning("שים לב: יש לאשר 5 בקשות חריגות לעדכון דירוגי שכר לפני סגירת החודש.")
-    if st.button("פתח מערכת אישורים", key="btn_admin"):
-        st.success("מערכת האישורים נפתחה. הודעה נשלחה למנהלי היחידות.")
-
-# ==========================================
-# לשונית 3: התראות AI וסיוע
-# ==========================================
-with tab_ai:
-    st.markdown("### 🤖 העוזר החכם שלך")
-    st.caption("התראות המבוססות על למידת מכונה לשיפור מיצוי זכויות ונוכחות")
-    
-    st.info("💡 **זיהוי חריגות בדיווח:**\n\nהמערכת זיהתה שבימי שלישי יש נטייה לחוסר דיווח שעון יציאה במחלקת פיקוח שטח. האם תרצה להגדיר תזכורת אוטומטית לנייד של עובדי המחלקה בשעה 16:00?")
-    if st.button("הפעל תזכורת חכמה", key="btn_ai_1"):
-        st.toast('תזכורת אוטומטית הוגדרה בהצלחה!', icon='✅')
+        <div class="main-content" style="opacity: 0.6; pointer-events: none;">
+            <div class="cards-container">
+                <div class="card"><div style="height: 60px;"></div></div>
+                <div class="card"><div style="height: 60px;"></div></div>
+            </div>
+        </div>
         
-    st.error("⚠️ **התראת מיצוי זכויות:**\n\nישנם 42 עובדים במחוז שטרם ניצלו את תקציב קצובת הביגוד השנתי. הזכאות פגה בעוד חודשיים.")
-    if st.button("שלח קמפיין תזכורת מרוכז", key="btn_ai_2"):
-        st.balloons()
-        st.success("הודעות פוש (Push) נשלחו לכל 42 העובדים הרלוונטיים.")
+        <!-- השכבה של ההתראה שקופצת מעל הכל -->
+        <div class="alert-overlay">
+            <div class="alert-box">
+                <div class="alert-header">
+                    <span style="margin-left: 8px; color: #ffd700;">⚠️</span> התראה חשובה מ- MyHR+ AI
+                </div>
+                <div class="alert-body">
+                    <div class="alert-text">
+                        <strong>מיכל</strong>, שמנו לב שעדיין לא ניצלת את סבסוד הלימודים השנתי שלך (עד ₪3,000)!<br><br>
+                        תוקף הזכאות פג בעוד 3 ימים (30.09.24).
+                    </div>
+                    <button class="alert-btn">למימוש הזכות עכשיו בלחיצה</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active"><div class="nav-icon">🏠</div>בית</div>
+            <div class="nav-item"><div class="nav-icon">🎁</div>הטבות</div>
+            <div class="nav-item"><div class="nav-icon">📄</div>מסמכים</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>פרופיל</div>
+        </div>
+    </div>
+    """
+
+# ציור התוצר הסופי על המסך
+st.markdown(html, unsafe_allow_html=True)
