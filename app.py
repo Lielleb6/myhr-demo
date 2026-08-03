@@ -3,8 +3,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="MyHR+ App", layout="wide", initial_sidebar_state="collapsed")
 
-# --- Remove Streamlit's default chrome (header, padding, footer) so the app
-# looks like a real full-screen mobile app instead of a page with margins. ---
+# --- הסרת ברירות המחדל של Streamlit למראה פול-סקרין נקי ---
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
@@ -31,7 +30,7 @@ components.html("""
         --ink:         #101a2b;
         --ink-soft:    #56657a;
         --ink-faint:   #8b98a8;
-        --paper:       #eef1f6;
+        --paper:       #f4f6f9;
         --card:        #ffffff;
         --emerald:     #1f9d6b;
         --emerald-tint:#e7f6ee;
@@ -55,16 +54,30 @@ components.html("""
     .pulse-text { animation: pulse 1.6s infinite ease-in-out; }
     .pulse-sub  { animation: pulse 1.6s infinite ease-in-out; animation-delay: 0.2s; }
 
+    /* --- Splash Screen --- */
     #splash {
         position: fixed; inset: 0; z-index: 999;
         background: radial-gradient(120% 90% at 50% 0%, var(--navy-light) 0%, var(--navy) 45%, var(--navy-deep) 100%);
         display: flex; flex-direction: column; justify-content: center; align-items: center;
-        transition: opacity 0.5s ease-out;
+        transition: opacity 0.4s ease-out, visibility 0.4s;
     }
-    #splash.hidden { opacity: 0; pointer-events: none; }
+    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    #app { opacity: 0; transition: opacity 0.5s ease-in; }
+    /* --- App Entrance Animation --- */
+    #app { opacity: 0; transition: opacity 0.4s ease-in; }
     #app.visible { opacity: 1; }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in {
+        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
 
     .shell { width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 118px; }
 
@@ -72,45 +85,51 @@ components.html("""
     .header {
         position: relative; overflow: hidden;
         background: linear-gradient(160deg, var(--navy-light) 0%, var(--navy) 55%, var(--navy-deep) 100%);
-        color: #fff; padding: 34px 22px 40px 22px;
-        border-bottom-right-radius: 28px; border-bottom-left-radius: 28px;
-        box-shadow: 0 12px 24px -8px rgba(6, 30, 58, 0.45);
+        color: #fff; padding: 36px 22px 42px 22px;
+        border-bottom-right-radius: 30px; border-bottom-left-radius: 30px;
+        box-shadow: 0 12px 28px -8px rgba(6, 30, 58, 0.4);
     }
-    .header-arcs { position: absolute; top: -40px; left: -60px; opacity: 0.16; pointer-events: none; }
+    .header-arcs { position: absolute; top: -40px; left: -60px; opacity: 0.14; pointer-events: none; }
     .header-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
     .avatar-badge {
-        width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
-        background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+        width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+        background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.24);
         display: flex; align-items: center; justify-content: center;
+        box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
     }
-    .greeting-name { font-size: 21px; font-weight: 800; letter-spacing: 0.2px; margin-bottom: 3px; }
+    .greeting-name { font-size: 21.5px; font-weight: 800; letter-spacing: 0.2px; margin-bottom: 2px; }
     .greeting-org  { font-size: 14px; font-weight: 600; opacity: 0.92; }
-    .greeting-unit { font-size: 12.5px; opacity: 0.68; margin-top: 1px; font-weight: 500; }
+    .greeting-unit { font-size: 12.5px; opacity: 0.7; margin-top: 1px; font-weight: 500; }
     .brand-mark { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; opacity: 0.96; }
     .brand-mark span { color: #6fd9b5; }
 
     /* ---------- Section label ---------- */
     .eyebrow {
         font-size: 12.5px; font-weight: 700; color: var(--ink-faint);
-        letter-spacing: 0.3px; margin: 22px 4px 8px 4px;
+        letter-spacing: 0.3px; margin: 24px 6px 6px 6px;
     }
     .section-title {
-        color: var(--navy-deep); font-size: 20px; font-weight: 800; margin: 0 4px 14px 4px;
+        color: var(--navy-deep); font-size: 20px; font-weight: 800; margin: 0 6px 14px 6px;
     }
 
     /* ---------- Cards ---------- */
-    .content { padding: 0 16px; position: relative; z-index: 10; margin-top: -22px; }
+    .content { padding: 0 16px; position: relative; z-index: 10; margin-top: -24px; }
     .card {
-        background: var(--card); border-radius: 18px; padding: 18px 20px;
+        background: var(--card); border-radius: 20px; padding: 18px 20px;
         margin-bottom: 14px; border: 1px solid var(--line);
-        box-shadow: 0 1px 2px rgba(16,26,43,0.04), 0 10px 24px -14px rgba(16,26,43,0.16);
+        box-shadow: 0 2px 4px rgba(16,26,43,0.02), 0 12px 28px -12px rgba(16,26,43,0.12);
         display: flex; align-items: center; justify-content: space-between;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
     }
+    .card:active { transform: scale(0.985); box-shadow: 0 2px 8px rgba(16,26,43,0.08); }
+    
     .card-label { font-size: 13.5px; font-weight: 700; color: var(--ink-soft); margin-bottom: 3px; }
     .card-value { font-size: 26px; font-weight: 900; color: var(--ink); line-height: 1.15; }
     .card-sub   { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; font-weight: 500; }
+    
     .icon-badge {
-        width: 52px; height: 52px; border-radius: 15px; flex-shrink: 0;
+        width: 52px; height: 52px; border-radius: 16px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
     }
 
@@ -122,10 +141,10 @@ components.html("""
     .ring-num { font-size: 20px; font-weight: 900; color: var(--ink); line-height: 1; }
     .ring-unit { font-size: 11px; color: var(--ink-faint); font-weight: 600; }
 
-    .salary-card { flex-direction: column; align-items: stretch; padding: 18px 20px 16px 20px; }
+    .salary-card { flex-direction: column; align-items: stretch; padding: 18px 20px 16px 20px; cursor: default; }
     .salary-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-    .bars { display: flex; align-items: flex-end; gap: 5px; height: 44px; }
-    .bar { width: 9px; border-radius: 3px; background: #dbe3ee; }
+    .bars { display: flex; align-items: flex-end; gap: 6px; height: 44px; }
+    .bar { width: 9px; border-radius: 3px; background: #dbe3ee; transition: height 0.3s ease; }
     .bar.up { background: var(--emerald); position: relative; }
     .bar.up::after {
         content: "↑"; position: absolute; top: -17px; left: 50%; transform: translateX(-50%);
@@ -133,24 +152,25 @@ components.html("""
     }
     .cta-outline {
         width: 100%; text-align: center; border: 1.5px solid var(--navy); color: var(--navy);
-        padding: 11px; border-radius: 12px; font-weight: 700; font-size: 14.5px;
-        cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
+        padding: 11px; border-radius: 14px; font-weight: 700; font-size: 14.5px;
+        cursor: pointer; transition: background 0.15s ease, transform 0.1s ease, color 0.15s;
     }
     .cta-outline:active { background: var(--blue-tint); transform: scale(0.985); }
 
     /* ---------- Bottom nav ---------- */
     .bottom-nav {
         position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
-        background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
-        padding: 10px 8px calc(18px + env(safe-area-inset-bottom, 8px)) 8px;
+        background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 10px 10px calc(18px + env(safe-area-inset-bottom, 8px)) 10px;
         display: flex; justify-content: space-around; align-items: center;
-        border-top: 1px solid var(--line); box-shadow: 0 -8px 24px -12px rgba(16,26,43,0.18);
+        border-top: 1px solid var(--line); box-shadow: 0 -10px 30px -12px rgba(16,26,43,0.15);
         z-index: 100;
     }
     .nav-item {
         display: flex; flex-direction: column; align-items: center; gap: 3px;
         font-size: 11.5px; font-weight: 600; color: var(--ink-faint);
-        cursor: pointer; padding: 6px 16px; border-radius: 12px;
+        cursor: pointer; padding: 6px 18px; border-radius: 14px;
         transition: background 0.15s ease, color 0.15s ease;
         -webkit-user-select: none; user-select: none;
     }
@@ -160,27 +180,28 @@ components.html("""
     /* ---------- Modal ---------- */
     #modal-overlay {
         position: fixed; inset: 0; z-index: 1000;
-        background: rgba(8, 42, 77, 0.5); backdrop-filter: blur(2px);
+        background: rgba(8, 42, 77, 0.45); backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
         display: none; justify-content: center; align-items: center;
         opacity: 0; transition: opacity 0.25s ease;
     }
     #modal-overlay.visible { display: flex; opacity: 1; }
     .modal-box {
-        background: var(--card); border-radius: 20px; padding: 32px 26px 26px 26px;
+        background: var(--card); border-radius: 24px; padding: 32px 26px 26px 26px;
         width: 82%; max-width: 320px; text-align: center;
-        box-shadow: 0 24px 48px -12px rgba(8,42,77,0.35);
-        transform: scale(0.92); transition: transform 0.25s ease;
+        box-shadow: 0 24px 48px -12px rgba(8,42,77,0.3);
+        transform: scale(0.92); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #modal-overlay.visible .modal-box { transform: scale(1); }
     .modal-icon {
         width: 56px; height: 56px; border-radius: 16px; background: var(--blue-tint);
         display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto;
     }
-    .modal-title { font-size: 18px; font-weight: 800; color: var(--navy-deep); }
+    .modal-title { font-size: 18.5px; font-weight: 800; color: var(--navy-deep); }
     .modal-sub   { font-size: 14.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
     .modal-close-btn {
-        margin-top: 20px; background: var(--navy); color: white; border: none;
-        padding: 11px 26px; border-radius: 12px; font-weight: 700; font-size: 14px;
+        margin-top: 22px; background: var(--navy); color: white; border: none;
+        padding: 12px 26px; border-radius: 14px; font-weight: 700; font-size: 14.5px;
         font-family: 'Assistant', sans-serif; cursor: pointer; width: 100%;
         transition: background 0.15s ease;
     }
@@ -227,7 +248,7 @@ components.html("""
         <div class="section-title">הדשבורד האישי שלי</div>
 
         <!-- Vacation Card -->
-        <div class="card">
+        <div class="card animate-in delay-1" onclick="showUnderConstruction()">
             <div style="text-align: right;">
                 <div class="card-label">יתרת חופשה</div>
                 <div class="card-value">12 ימים</div>
@@ -242,7 +263,7 @@ components.html("""
         </div>
 
         <!-- Cibus Card -->
-        <div class="card">
+        <div class="card animate-in delay-2" onclick="showUnderConstruction()">
             <div style="text-align: right;">
                 <div class="card-label">יתרת סיבוס (Cibus)</div>
                 <div class="card-value" dir="rtl">₪450</div>
@@ -254,7 +275,7 @@ components.html("""
         </div>
 
         <!-- Salary Card -->
-        <div class="card salary-card">
+        <div class="card salary-card animate-in delay-3">
             <div class="salary-top">
                 <div style="text-align: right;">
                     <div class="card-label">עדכון שכר</div>
@@ -269,7 +290,7 @@ components.html("""
                     <div class="bar up" style="height: 100%;"></div>
                 </div>
             </div>
-            <div class="cta-outline">צפייה בתלוש האחרון</div>
+            <div class="cta-outline" onclick="showUnderConstruction()">צפייה בתלוש האחרון</div>
         </div>
     </div>
 
@@ -324,16 +345,18 @@ components.html("""
         if (e.target === overlay) closeModal();
     });
 
-    // Smooth splash -> app transition, done entirely client-side.
+    // Smooth splash -> app transition
     setTimeout(function () {
-        document.getElementById('splash').classList.add('hidden');
-        document.getElementById('app').classList.add('visible');
+        var splash = document.getElementById('splash');
+        var app = document.getElementById('app');
+        splash.classList.add('hidden');
+        app.classList.add('visible');
         setTimeout(function () {
-            document.getElementById('splash').style.display = 'none';
-        }, 500);
-    }, 1600);
+            splash.style.display = 'none';
+        }, 400);
+    }, 1500);
 </script>
 
 </body>
 </html>
-""", height=926, scrolling=True)
+""", height=880, scrolling=False)
