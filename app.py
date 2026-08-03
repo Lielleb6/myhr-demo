@@ -38,7 +38,7 @@ components.html("""
     }
     * { 
         box-sizing: border-box; 
-        -webkit-user-select: none; /* מונע סימון טקסט כמו בדפדפן */
+        -webkit-user-select: none;
         user-select: none;
         -webkit-touch-callout: none;
     }
@@ -47,7 +47,7 @@ components.html("""
         margin: 0; padding: 0; background: var(--paper);
         font-family: 'Assistant', sans-serif; overflow: hidden; color: var(--ink);
         -webkit-tap-highlight-color: transparent;
-        overscroll-behavior-y: none; /* מבטל את אפקט הגלילה של הדפדפן למעלה/למטה */
+        overscroll-behavior-y: none;
     }
 
     #desktop-view-warning { display: none; }
@@ -86,6 +86,33 @@ components.html("""
         transition: opacity 0.4s ease-out, visibility 0.4s;
     }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    /* ---------- אשף התאמה אישית (Onboarding) ---------- */
+    #onboarding {
+        position: absolute; inset: 0; z-index: 990; background: var(--paper);
+        display: none; flex-direction: column; padding: 20px; overflow-y: auto;
+    }
+    #onboarding.active { display: flex; }
+    
+    .onboarding-title { font-size: 22px; font-weight: 900; color: var(--navy-deep); margin-bottom: 6px; }
+    .onboarding-sub { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 16px; line-height: 1.4; }
+    
+    .pref-item {
+        background: var(--card); border: 2px solid var(--line); padding: 12px 14px;
+        border-radius: 14px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .pref-item.selected { border-color: var(--emerald); background: var(--emerald-tint); }
+    .pref-label { font-weight: 700; font-size: 14px; color: var(--ink); }
+    .pref-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--ink-faint); display: flex; align-items: center; justify-content: center; }
+    .pref-item.selected .pref-check { background: var(--emerald); border-color: var(--emerald); color: white; }
+
+    .btn-primary {
+        background: var(--navy); color: white; border: none; width: 100%; padding: 14px;
+        border-radius: 14px; font-weight: 800; font-size: 16px; cursor: pointer; text-align: center;
+        margin-top: 10px; box-shadow: 0 4px 12px rgba(13,63,110,0.3);
+    }
+    .btn-primary:active { transform: scale(0.98); }
 
     #app { opacity: 0; transition: opacity 0.4s ease-in; height: 100%; display: flex; flex-direction: column; }
     #app.visible { opacity: 1; }
@@ -134,10 +161,9 @@ components.html("""
         text-transform: uppercase;
     }
 
-    /* אזור תוכן גלל כמו באפליקציה מקורית */
     .view-container {
         flex: 1; overflow-y: auto; padding: 16px 16px 95px 16px; display: none;
-        -webkit-overflow-scrolling: touch; /* גלילה חלקה של אייפון/אנדרואיד */
+        -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
     }
     .view-container.active-view { display: block; }
@@ -148,6 +174,7 @@ components.html("""
     }
     .section-title {
         color: var(--navy-deep); font-size: 20px; font-weight: 800; margin: 0 4px 14px 4px;
+        display: flex; justify-content: space-between; align-items: center;
     }
 
     .card {
@@ -155,9 +182,7 @@ components.html("""
         margin-bottom: 12px; border: 1px solid var(--line);
         box-shadow: 0 2px 4px rgba(16,26,43,0.02), 0 10px 24px -12px rgba(16,26,43,0.1);
         display: flex; align-items: center; justify-content: space-between;
-        transition: transform 0.1s ease;
     }
-    .card:active { transform: scale(0.98); } /* אפקט לחיצה של אפליקציה */
 
     .card-label { font-size: 14px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
     .card-value { font-size: 24px; font-weight: 900; color: var(--ink); line-height: 1.1; }
@@ -206,7 +231,6 @@ components.html("""
         font-size: 11.5px; font-weight: 600; color: var(--ink-faint);
         cursor: pointer; padding: 6px 16px; border-radius: 12px;
         transition: all 0.15s ease;
-        -webkit-user-select: none; user-select: none;
     }
     .nav-item.active { color: var(--navy); font-weight: 800; background: var(--blue-tint); }
 </style>
@@ -224,11 +248,52 @@ components.html("""
 <div id="app-wrapper" style="width: 100%; height: 100%; display: flex; justify-content: center;">
 <div class="shell">
 
+    <!-- Splash Screen -->
     <div id="splash">
         <div class="pulse-text" dir="ltr" style="color: white; font-size: 52px; font-weight: 900; letter-spacing: 1px;">MyHR<span style="color:#6fd9b5;">+</span></div>
         <div class="pulse-sub" style="color: #b9d3ec; font-size: 16px; margin-top: 10px; font-weight: 600;">מתחבר למערכות...</div>
     </div>
 
+    <!-- Onboarding: בחירת מדדים לדשבורד האישי -->
+    <div id="onboarding">
+        <div style="margin-top: 10px;">
+            <div class="onboarding-title">התאם אישית את הדשבורד שלך 🎯</div>
+            <div class="onboarding-sub">בחר אילו נתונים והטבות תרצה שיוצגו מיד בדף הבית שלך:</div>
+        </div>
+        
+        <div class="pref-item selected" onclick="togglePref(this, 'vacation')">
+            <span class="pref-label">🌴 יתרת חופשה</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item selected" onclick="togglePref(this, 'cibus')">
+            <span class="pref-label">🍽️ תקציב אוכל (סיבוס)</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item selected" onclick="togglePref(this, 'salary')">
+            <span class="pref-label">📈 עדכון שכר ותלושים</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item" onclick="togglePref(this, 'stocks')">
+            <span class="pref-label">📈 מניות ואופציות</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item" onclick="togglePref(this, 'education')">
+            <span class="pref-label">💰 קרן השתלמות</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item" onclick="togglePref(this, 'bonus')">
+            <span class="pref-label">🎁 בונוס שנתי מובטח</span>
+            <div class="pref-check">✓</div>
+        </div>
+        <div class="pref-item" onclick="togglePref(this, 'hybrid')">
+            <span class="pref-label">🌿 עבודה היברידית</span>
+            <div class="pref-check">✓</div>
+        </div>
+
+        <button class="btn-primary" onclick="savePreferences()">שמור והתחל לעבוד</button>
+    </div>
+
+    <!-- Main App -->
     <div id="app">
 
         <!-- Header -->
@@ -266,59 +331,23 @@ components.html("""
             </div>
         </div>
 
-        <!-- VIEW 1: HOME (בית) -->
+        <!-- VIEW 1: HOME (בית - דינמי לפי בחירת המשתמש) -->
         <div id="view-home" class="view-container active-view">
             <div class="eyebrow">סקירה כללית</div>
-            <div class="section-title">הדשבורד האישי שלי</div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">יתרת חופשה</div>
-                    <div class="card-value">12 ימים</div>
-                    <div class="card-sub">מתוך 20 ימים שנתיים</div>
-                </div>
-                <div class="ring-wrap" style="background: conic-gradient(var(--emerald) 0% 60%, #e9edf3 60% 100%);">
-                    <div class="ring-center">
-                        <span class="ring-num">12</span>
-                        <span class="ring-unit">ימים</span>
-                    </div>
-                </div>
+            <div class="section-title">
+                <span>הדשבורד האישי שלי</span>
+                <span style="font-size: 12px; color: var(--navy-light); cursor: pointer; text-decoration: underline;" onclick="resetOnboarding()">שינוי העדפות ⚙️</span>
             </div>
 
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">יתרת סיבוס (Cibus)</div>
-                    <div class="card-value" dir="rtl">₪450</div>
-                    <div class="card-sub" style="max-width: 180px;">היתרה לספטמבר. כל יום זכאי ל-90 ש"ח</div>
-                </div>
-                <div class="icon-badge" style="background: var(--blue-tint);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
-                </div>
-            </div>
-
-            <div class="card salary-card">
-                <div class="salary-top">
-                    <div style="text-align: right;">
-                        <div class="card-label">עדכון שכר</div>
-                        <div class="card-sub">עדכון שכר מהתלוש האחרון</div>
-                    </div>
-                    <div class="bars">
-                        <div class="bar" style="height: 38%;"></div>
-                        <div class="bar" style="height: 55%;"></div>
-                        <div class="bar" style="height: 46%;"></div>
-                        <div class="bar" style="height: 66%;"></div>
-                        <div class="bar" style="height: 50%;"></div>
-                        <div class="bar up" style="height: 100%;"></div>
-                    </div>
-                </div>
-                <div class="cta-outline" onclick="switchView('documents')">צפייה בתלוש האחרון</div>
+            <div id="home-cards-container">
+                <!-- הכרטיסים יטענו דינמית לפי ההגדרות -->
             </div>
         </div>
 
         <!-- VIEW 2: BENEFITS (הטבות) -->
         <div id="view-benefits" class="view-container">
             <div class="eyebrow">רווחה ותנאים</div>
-            <div class="section-title">ההטבות והתנאים שלך</div>
+            <div class="section-title"><span>ההטבות והתנאים שלך</span></div>
 
             <div class="card">
                 <div style="text-align: right;">
@@ -424,7 +453,7 @@ components.html("""
         <!-- VIEW 3: DOCUMENTS (מסמכים) -->
         <div id="view-documents" class="view-container">
             <div class="eyebrow">ארכיון דיגיטלי</div>
-            <div class="section-title">חוזים, תלושים ואישורים</div>
+            <div class="section-title"><span>חוזים, תלושים ואישורים</span></div>
 
             <div class="card">
                 <div style="text-align: right;">
@@ -463,7 +492,7 @@ components.html("""
         <!-- VIEW 4: PROFILE (פרופיל) -->
         <div id="view-profile" class="view-container">
             <div class="eyebrow">פרטים אישיים</div>
-            <div class="section-title">כרטיס עובד - אלביט מערכות</div>
+            <div class="section-title"><span>כרטיס עובד - אלביט מערכות</span></div>
 
             <div class="card" style="flex-direction: column; align-items: flex-start; gap: 8px;">
                 <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -511,6 +540,148 @@ components.html("""
 </div>
 
 <script>
+    function togglePref(el, key) {
+        el.classList.toggle('selected');
+    }
+
+    function savePreferences() {
+        var selectedItems = [];
+        var items = document.querySelectorAll('.pref-item');
+        items.forEach(function(item) {
+            if (item.classList.contains('selected')) {
+                // מציאת המפתח מתוך ה-onclick
+                var onclickStr = item.getAttribute('onclick');
+                var match = onclickStr.match(/'([^']+)'/);
+                if (match && match[1]) {
+                    selectedItems.push(match[1]);
+                }
+            }
+        });
+        localStorage.setItem('myhr_prefs', JSON.stringify(selectedItems));
+        document.getElementById('onboarding').classList.remove('active');
+        buildDynamicDashboard();
+    }
+
+    function resetOnboarding() {
+        document.getElementById('onboarding').classList.add('active');
+    }
+
+    function buildDynamicDashboard() {
+        var container = document.getElementById('home-cards-container');
+        container.innerHTML = '';
+        
+        var saved = localStorage.getItem('myhr_prefs');
+        var prefs = saved ? JSON.parse(saved) : ['vacation', 'cibus', 'salary'];
+
+        // הגדרת כל כרטיסי הבית האפשריים
+        var cardsHtml = {
+            vacation: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">יתרת חופשה</div>
+                        <div class="card-value">12 ימים</div>
+                        <div class="card-sub">מתוך 20 ימים שנתיים</div>
+                    </div>
+                    <div class="ring-wrap" style="background: conic-gradient(var(--emerald) 0% 60%, #e9edf3 60% 100%);">
+                        <div class="ring-center">
+                            <span class="ring-num">12</span>
+                            <span class="ring-unit">ימים</span>
+                        </div>
+                    </div>
+                </div>
+            `,
+            cibus: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">יתרת סיבוס (Cibus)</div>
+                        <div class="card-value" dir="rtl">₪450</div>
+                        <div class="card-sub" style="max-width: 180px;">היתרה לספטמבר. כל יום זכאי ל-90 ש"ח</div>
+                    </div>
+                    <div class="icon-badge" style="background: var(--blue-tint);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                    </div>
+                </div>
+            `,
+            salary: `
+                <div class="card salary-card">
+                    <div class="salary-top">
+                        <div style="text-align: right;">
+                            <div class="card-label">עדכון שכר</div>
+                            <div class="card-sub">עדכון שכר מהתלוש האחרון</div>
+                        </div>
+                        <div class="bars">
+                            <div class="bar" style="height: 38%;"></div>
+                            <div class="bar" style="height: 55%;"></div>
+                            <div class="bar" style="height: 46%;"></div>
+                            <div class="bar" style="height: 66%;"></div>
+                            <div class="bar" style="height: 50%;"></div>
+                            <div class="bar up" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="cta-outline" onclick="switchView('documents')">צפייה בתלוש האחרון</div>
+                </div>
+            `,
+            stocks: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">מניות ואופציות</div>
+                        <div class="card-value" style="font-size: 20px; color: var(--emerald);">1,500 יחידות</div>
+                        <div class="card-sub">חלק מהרווחים ושותפות עתידית בחברה</div>
+                    </div>
+                    <div class="icon-badge" style="background: #e7f6ee;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="1.6"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                    </div>
+                </div>
+            `,
+            education: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">קרן השתלמות</div>
+                        <div class="card-value" dir="rtl">₪42,100</div>
+                        <div class="card-sub">הפקדות מעסיק מוגדלות מהיום הראשון</div>
+                    </div>
+                    <div class="icon-badge" style="background: var(--blue-tint);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                </div>
+            `,
+            bonus: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">בונוס שנתי מובטח</div>
+                        <div class="card-value">עד 3 משכורות</div>
+                        <div class="card-sub">על בסיס עמידה ביעדי החברה והאינדיבידואל</div>
+                    </div>
+                    <div class="icon-badge" style="background: #fbf1e0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c98a2c" stroke-width="1.6"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                    </div>
+                </div>
+            `,
+            hybrid: `
+                <div class="card">
+                    <div style="text-align: right;">
+                        <div class="card-label">עבודה היברידית</div>
+                        <div class="card-value" style="font-size: 19px;">3 ימים מהמשרד</div>
+                        <div class="card-sub">כולל תקציב חד-פעמי להקמת משרד ביתי נוח</div>
+                    </div>
+                    <div class="icon-badge" style="background: #fbf1e0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c98a2c" stroke-width="1.6"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                </div>
+            `
+        };
+
+        prefs.forEach(function(key) {
+            if (cardsHtml[key]) {
+                container.innerHTML += cardsHtml[key];
+            }
+        });
+
+        if (prefs.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:var(--ink-faint); padding: 30px;">לא נבחרו פריטים לתצוגה. לחץ על "שינוי העדפות" למעלה.</div>';
+        }
+    }
+
     function switchView(viewName) {
         var views = document.querySelectorAll('.view-container');
         for (var i = 0; i < views.length; i++) {
@@ -525,6 +696,7 @@ components.html("""
         document.getElementById('nav-' + viewName).classList.add('active');
     }
 
+    // תזרים טעינה והצגת אשף אם זו פעם ראשונה
     setTimeout(function () {
         var splash = document.getElementById('splash');
         var app = document.getElementById('app');
@@ -533,6 +705,13 @@ components.html("""
             app.classList.add('visible');
             setTimeout(function () {
                 splash.style.display = 'none';
+                
+                // בדיקה האם המשתמש כבר בחר העדפות בעבר
+                if (!localStorage.getItem('myhr_prefs')) {
+                    document.getElementById('onboarding').classList.add('active');
+                } else {
+                    buildDynamicDashboard();
+                }
             }, 400);
         }
     }, 1500);
