@@ -70,6 +70,22 @@ components.html("""
         overscroll-behavior: none;
     }
 
+    @keyframes pulse {
+        0% { transform: scale(0.96); opacity: 0.75; }
+        50% { transform: scale(1.03); opacity: 1; }
+        100% { transform: scale(0.96); opacity: 0.75; }
+    }
+    .pulse-text { animation: pulse 1.6s infinite ease-in-out; }
+    .pulse-sub  { animation: pulse 1.6s infinite ease-in-out; animation-delay: 0.2s; }
+
+    #splash {
+        position: absolute; inset: 0; z-index: 999;
+        background: radial-gradient(120% 90% at 50% 0%, var(--navy-light) 0%, var(--navy) 45%, var(--navy-deep) 100%);
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        transition: opacity 0.4s ease-out, visibility 0.4s;
+    }
+    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
     /* ---------- אשף התאמה אישית פרימיום (Onboarding) ---------- */
     #onboarding {
         position: absolute; inset: 0; z-index: 990; background: #ffffff;
@@ -119,7 +135,8 @@ components.html("""
     }
     .btn-primary:active { transform: scale(0.98); }
 
-    #app { height: 100%; display: flex; flex-direction: column; }
+    #app { opacity: 0; transition: opacity 0.4s ease-in; height: 100%; display: flex; flex-direction: column; }
+    #app.visible { opacity: 1; }
 
     /* ---------- Header ---------- */
     .header {
@@ -320,6 +337,12 @@ components.html("""
 
 <div id="app-wrapper" style="width: 100%; height: 100%; display: flex; justify-content: center;">
 <div class="shell">
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="pulse-text" dir="ltr" style="color: white; font-size: 52px; font-weight: 900; letter-spacing: 1px;">MyHR<span style="color:#5eead4;">+</span></div>
+        <div class="pulse-sub" style="color: #94a3b8; font-size: 15px; margin-top: 10px; font-weight: 600;">טוען סביבת עבודה מאובטחת...</div>
+    </div>
 
     <!-- Onboarding: אשף בחירה אישי פרימיום -->
     <div id="onboarding">
@@ -601,12 +624,9 @@ components.html("""
             org = profile.org || org;
             unit = profile.unit || unit;
         }
-        var nameEl = document.getElementById('header-name');
-        var orgEl = document.getElementById('header-org');
-        var unitEl = document.getElementById('header-unit');
-        if (nameEl) nameEl.innerText = 'שלום, ' + name;
-        if (orgEl) orgEl.innerText = org;
-        if (unitEl) unitEl.innerText = unit;
+        document.getElementById('header-name').innerText = 'שלום, ' + name;
+        document.getElementById('header-org').innerText = org;
+        document.getElementById('header-unit').innerText = unit;
     }
 
     function toggleMira(show) {
@@ -630,10 +650,13 @@ components.html("""
         if (!text) return;
 
         var history = document.getElementById('chat-history');
+        
+        // הוספת הודעת משתמש
         history.innerHTML += '<div class="chat-bubble user">' + text + '</div>';
         inputField.value = '';
         history.scrollTop = history.scrollHeight;
 
+        // מענה חכם מדורג מבוסס מילות מפתח
         setTimeout(function() {
             var reply = "בדקתי עבורך במערכות החברה. בהתאם לנתוני הפרופיל והזכויות שלך, הנושא מטופל מול מחלקת משאבי אנוש ומופיע באזור האישי.";
             
@@ -661,15 +684,12 @@ components.html("""
         var calculatedStocks = baseStocks + (multiplier * 350);
         var calculatedEdu = baseEdu + (multiplier * 12500);
 
-        var sEl = document.getElementById('sim-stocks');
-        var eEl = document.getElementById('sim-edu');
-        if (sEl) sEl.innerText = calculatedStocks + ' יחידות';
-        if (eEl) eEl.innerText = '₪' + calculatedEdu.toLocaleString();
+        document.getElementById('sim-stocks').innerText = calculatedStocks + ' יחידות';
+        document.getElementById('sim-edu').innerText = '₪' + calculatedEdu.toLocaleString();
     }
 
     function buildDynamicDashboard() {
         var container = document.getElementById('home-cards-container');
-        if (!container) return;
         container.innerHTML = '';
         
         var saved = localStorage.getItem('myhr_prefs');
@@ -770,25 +790,33 @@ components.html("""
         for (var i = 0; i < views.length; i++) {
             views[i].classList.remove('active-view');
         }
-        var target = document.getElementById('view-' + viewName);
-        if (target) target.classList.add('active-view');
+        document.getElementById('view-' + viewName).classList.add('active-view');
 
         var navItems = document.querySelectorAll('.nav-item');
         for (var j = 0; j < navItems.length; j++) {
             navItems[j].classList.remove('active');
         }
-        var navTarget = document.getElementById('nav-' + viewName);
-        if (navTarget) navTarget.classList.add('active');
+        document.getElementById('nav-' + viewName).classList.add('active');
     }
 
-    // הפעלה מיידית של אתחול המערכת בלי לחכות ל-window.onload
-    loadProfileData();
-    if (!localStorage.getItem('myhr_prefs')) {
-        var onboardingEl = document.getElementById('onboarding');
-        if (onboardingEl) onboardingEl.classList.add('active');
-    } else {
-        buildDynamicDashboard();
-    }
+    setTimeout(function () {
+        var splash = document.getElementById('splash');
+        var app = document.getElementById('app');
+        if (splash && app) {
+            splash.classList.add('hidden');
+            app.classList.add('visible');
+            setTimeout(function () {
+                splash.style.display = 'none';
+                loadProfileData();
+                
+                if (!localStorage.getItem('myhr_prefs')) {
+                    document.getElementById('onboarding').classList.add('active');
+                } else {
+                    buildDynamicDashboard();
+                }
+            }, 400);
+        }
+    }, 1500);
 </script>
 
 </body>
