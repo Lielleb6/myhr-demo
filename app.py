@@ -26,8 +26,6 @@ components.html("""
         --navy-deep:   #061a33;
         --navy:        #0a2e5c;
         --navy-light:  #144a8a;
-        --gold:        #d4af37;
-        --gold-light:  #f9f3e1;
         --ink:         #0f172a;
         --ink-soft:    #475569;
         --ink-faint:   #94a3b8;
@@ -36,6 +34,7 @@ components.html("""
         --emerald:     #0d9488;
         --emerald-tint:#ccfbf1;
         --line:        #e2e8f0;
+        --accent-gold: #d97706;
     }
     * { 
         box-sizing: border-box; 
@@ -140,6 +139,7 @@ components.html("""
     #app { opacity: 0; transition: opacity 0.4s ease-in; height: 100%; display: flex; flex-direction: column; }
     #app.visible { opacity: 1; }
 
+    /* ---------- Header ---------- */
     .header {
         position: relative; overflow: hidden; flex-shrink: 0;
         background: linear-gradient(160deg, var(--navy-light) 0%, var(--navy) 55%, var(--navy-deep) 100%);
@@ -184,6 +184,7 @@ components.html("""
         text-transform: uppercase;
     }
 
+    /* ---------- Views / Content ---------- */
     .view-container {
         flex: 1; overflow-y: auto; padding: 16px 16px 95px 16px; display: none;
         -webkit-overflow-scrolling: touch;
@@ -200,6 +201,7 @@ components.html("""
         display: flex; justify-content: space-between; align-items: center;
     }
 
+    /* ---------- Cards & Widgets ---------- */
     .card {
         background: var(--card); border-radius: 20px; padding: 16px 18px;
         margin-bottom: 12px; border: 1px solid var(--line);
@@ -217,6 +219,23 @@ components.html("""
         width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
     }
+
+    /* כרטיס פיד דינמי (Smart Alert Pulse) */
+    .pulse-alert-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+        border: 1px solid #fde68a; border-radius: 20px; padding: 14px 16px;
+        margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 4px 15px rgba(217, 119, 6, 0.08);
+    }
+
+    /* סימולטור קריירה דינמי */
+    .simulator-card {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: white; border-radius: 20px; padding: 18px; margin-bottom: 12px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+    }
+    .slider-container { margin-top: 12px; }
+    .slider-container input { width: 100%; accent-color: #5eead4; cursor: pointer; }
 
     .ring-wrap { position: relative; width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; }
     .ring-center {
@@ -242,6 +261,24 @@ components.html("""
     }
     .cta-outline:active { background: #f0f4f8; }
 
+    /* צף עוזרת חכמה (Mira Chat Widget) */
+    .mira-fab {
+        position: absolute; bottom: 85px; left: 16px; background: var(--emerald);
+        color: white; width: 44px; height: 44px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4); z-index: 90; font-weight: 900;
+    }
+    .mira-modal {
+        position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+        z-index: 200; display: none; align-items: flex-end;
+    }
+    .mira-modal.active { display: flex; }
+    .mira-sheet {
+        background: white; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px;
+        padding: 20px; max-height: 70vh; display: flex; flex-direction: column;
+    }
+
+    /* ---------- Bottom Navigation ---------- */
     .bottom-nav {
         position: absolute; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
         background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(16px);
@@ -279,7 +316,7 @@ components.html("""
         <div class="pulse-sub" style="color: #94a3b8; font-size: 15px; margin-top: 10px; font-weight: 600;">טוען סביבת עבודה מאובטחת...</div>
     </div>
 
-    <!-- Onboarding: אשף בחירה אישי יוקרתי -->
+    <!-- Onboarding: אשף בחירה אישי פרימיום -->
     <div id="onboarding">
         <div class="onboarding-header">
             <span class="onboarding-badge">Executive Workspace</span>
@@ -288,6 +325,20 @@ components.html("""
         </div>
         
         <div class="pref-list">
+            <div class="pref-item selected" onclick="togglePref(this, 'pulse')">
+                <div class="pref-content">
+                    <div class="pref-icon">⚡</div>
+                    <span class="pref-label">פיד עדכונים חכמים (Pulse)</span>
+                </div>
+                <div class="pref-check">✓</div>
+            </div>
+            <div class="pref-item selected" onclick="togglePref(this, 'simulator')">
+                <div class="pref-content">
+                    <div class="pref-icon">🔮</div>
+                    <span class="pref-label">סימולטור צמיחה עתידית</span>
+                </div>
+                <div class="pref-check">✓</div>
+            </div>
             <div class="pref-item selected" onclick="togglePref(this, 'vacation')">
                 <div class="pref-content">
                     <div class="pref-icon">🌴</div>
@@ -320,20 +371,6 @@ components.html("""
                 <div class="pref-content">
                     <div class="pref-icon">💼</div>
                     <span class="pref-label">קרן השתלמות</span>
-                </div>
-                <div class="pref-check">✓</div>
-            </div>
-            <div class="pref-item" onclick="togglePref(this, 'bonus')">
-                <div class="pref-content">
-                    <div class="pref-icon">🎯</div>
-                    <span class="pref-label">בונוס שנתי מובטח</span>
-                </div>
-                <div class="pref-check">✓</div>
-            </div>
-            <div class="pref-item" onclick="togglePref(this, 'hybrid')">
-                <div class="pref-content">
-                    <div class="pref-icon">🌿</div>
-                    <span class="pref-label">עבודה היברידית</span>
                 </div>
                 <div class="pref-check">✓</div>
             </div>
@@ -380,7 +417,7 @@ components.html("""
             </div>
         </div>
 
-        <!-- VIEW 1: HOME (בית) -->
+        <!-- VIEW 1: HOME (בית עם ווידג'טים דינמיים) -->
         <div id="view-home" class="view-container active-view">
             <div class="eyebrow">סקירה כללית</div>
             <div class="section-title">
@@ -389,7 +426,7 @@ components.html("""
             </div>
 
             <div id="home-cards-container">
-                <!-- נטען דינמית -->
+                <!-- נטען דינמית בהתאם לבחירת המשתמש -->
             </div>
         </div>
 
@@ -563,6 +600,27 @@ components.html("""
             </div>
         </div>
 
+        <!-- כפתור צף לעוזרת חכמה (Mira AI) -->
+        <div class="mira-fab" onclick="toggleMira(true)" title="Mira AI">🤖</div>
+
+        <!-- מודאל צ'אט עוזרת חכמה -->
+        <div class="mira-modal" id="mira-modal">
+            <div class="mira-sheet">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="font-weight: 900; font-size: 18px; color: var(--navy-deep);">Mira AI • עוזרת HR</div>
+                    <div style="cursor: pointer; font-weight: 700; color: var(--ink-faint); font-size: 18px;" onclick="toggleMira(false)">✕</div>
+                </div>
+                <div style="background: #f8fafc; border-radius: 14px; padding: 12px; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.4;">
+                    היי דניאל! אני מירה, העוזרת החכמה שלך באלביט. איך אוכל לעזור לך היום?
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('יש לך 12 ימי חופשה פנויים שניתן לנצל עד סוף השנה.')">כמה ימי חופשה נשארו לי?</div>
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('קרן ההשתלמות שלך מופקדת אוטומטית בכל 1 לחודש בהפרשות מקסימליות.')">איפה קרן ההשתלמות שלי?</div>
+                </div>
+                <div id="mira-response" style="margin-top: 12px; font-weight: 700; color: var(--emerald); font-size: 13.5px;"></div>
+            </div>
+        </div>
+
         <!-- Bottom Nav -->
         <div class="bottom-nav">
             <div class="nav-item" id="nav-profile" onclick="switchView('profile')">
@@ -614,14 +672,70 @@ components.html("""
         document.getElementById('onboarding').classList.add('active');
     }
 
+    function toggleMira(show) {
+        var modal = document.getElementById('mira-modal');
+        if (show) {
+            modal.classList.add('active');
+        } else {
+            modal.classList.remove('active');
+            document.getElementById('mira-response').innerText = '';
+        }
+    }
+
+    function miraReply(text) {
+        document.getElementById('mira-response').innerText = 'תשובת Mira: ' + text;
+    }
+
+    function updateSimulator(val) {
+        var baseStocks = 1500;
+        var baseEdu = 42100;
+        var multiplier = parseInt(val);
+        
+        var calculatedStocks = baseStocks + (multiplier * 350);
+        var calculatedEdu = baseEdu + (multiplier * 12500);
+
+        document.getElementById('sim-stocks').innerText = calculatedStocks + ' יחידות';
+        document.getElementById('sim-edu').innerText = '₪' + calculatedEdu.toLocaleString();
+    }
+
     function buildDynamicDashboard() {
         var container = document.getElementById('home-cards-container');
         container.innerHTML = '';
         
         var saved = localStorage.getItem('myhr_prefs');
-        var prefs = saved ? JSON.parse(saved) : ['vacation', 'cibus', 'salary'];
+        var prefs = saved ? JSON.parse(saved) : ['pulse', 'simulator', 'vacation', 'cibus', 'salary'];
 
         var cardsHtml = {
+            pulse: `
+                <div class="pulse-alert-card">
+                    <div style="font-size: 26px;">⚡</div>
+                    <div style="text-align: right; flex: 1;">
+                        <div style="font-size: 13px; font-weight: 800; color: #b45309;">עדכון חכם להיום</div>
+                        <div style="font-size: 12px; color: var(--ink-soft); margin-top: 1px;">נותרו לך עוד 3 ימים לנצל את תקציב הסיבוס החודשי. נופש החטיבה באילת עוד 14 יום!</div>
+                    </div>
+                </div>
+            `,
+            simulator: `
+                <div class="simulator-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 14px; font-weight: 800; color: #5eead4;">🔮 סימולטור צמיחה עתידית</span>
+                        <span style="font-size: 11px; opacity: 0.7;" id="sim-years">הזז לשנים קדימה</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; opacity: 0.7;">מניות צפויות:</div>
+                            <div style="font-size: 16px; font-weight: 900;" id="sim-stocks">1,500 יחידות</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; opacity: 0.7;">קרן השתלמות:</div>
+                            <div style="font-size: 16px; font-weight: 900;" id="sim-edu">₪42,100</div>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" min="1" max="5" value="1" oninput="updateSimulator(this.value)">
+                    </div>
+                </div>
+            `,
             vacation: `
                 <div class="card">
                     <div style="text-align: right;">
@@ -689,30 +803,6 @@ components.html("""
                     </div>
                     <div class="icon-badge" style="background: #e0f2fe;">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    </div>
-                </div>
-            `,
-            bonus: `
-                <div class="card">
-                    <div style="text-align: right;">
-                        <div class="card-label">בונוס שנתי מובטח</div>
-                        <div class="card-value">עד 3 משכורות</div>
-                        <div class="card-sub">על בסיס עמידה ביעדי החברה והאינדיבידואל</div>
-                    </div>
-                    <div class="icon-badge" style="background: #fef3c7;">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                    </div>
-                </div>
-            `,
-            hybrid: `
-                <div class="card">
-                    <div style="text-align: right;">
-                        <div class="card-label">עבודה היברידית</div>
-                        <div class="card-value" style="font-size: 18px;">3 ימים מהמשרד</div>
-                        <div class="card-sub">כולל תקציב חד-פעמי להקמת משרד ביתי נוח</div>
-                    </div>
-                    <div class="icon-badge" style="background: #fef3c7;">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     </div>
                 </div>
             `
