@@ -1,30 +1,39 @@
 import streamlit as st
 import time
 
-st.set_page_config(page_title="MyHR+ App", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="MyHR+ App", layout="wide", initial_sidebar_state="collapsed")
 
-# הגדרת משתנה מצב (Session State) כדי לבדוק אם האפליקציה כבר נטענה
+# הגדרת משתנה מצב כדי לדעת אם צריך להציג את מסך הטעינה
 if 'app_loaded' not in st.session_state:
     st.session_state.app_loaded = False
 
+# איפוס מוחלט של כל השוליים והשטחים הלבנים של Streamlit
 st.markdown("""
 <style>
-html, body, [data-testid="stAppViewContainer"] {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden !important; 
-    margin: 0;
-    padding: 0;
-    touch-action: pan-y;
-    -webkit-tap-highlight-color: transparent;
+/* איפוס גוף הדפדפן */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #f0f2f6;
+    overflow-x: hidden;
 }
-.block-container { padding: 0 !important; max-width: 100% !important; margin: auto !important; }
+
+/* ביטול הרווח העליון הענק ש-Streamlit שם כברירת מחדל */
+.block-container, div[data-testid="stAppViewBlockContainer"] {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    margin-top: 0rem !important;
+    max-width: 100% !important;
+}
+
+/* העלמת תפריטים מיותרים */
+#MainMenu { visibility: hidden; }
 header { display: none !important; }
 footer { display: none !important; }
-.stApp { direction: rtl; background-color: #f0f2f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
-::-webkit-scrollbar { display: none; }
 
-/* אנימציית הפעימה של מסך הטעינה */
+/* האנימציה של מסך הטעינה */
 @keyframes pulse {
     0% { transform: scale(0.95); opacity: 0.8; }
     50% { transform: scale(1.05); opacity: 1; }
@@ -35,28 +44,34 @@ footer { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# אם האפליקציה עדיין לא נטענה - נציג את מסך הפתיחה
+# שימוש בקונטיינר מתחלף כדי למנוע התנגשויות בין המסכים
+placeholder = st.empty()
+
 if not st.session_state.app_loaded:
-    splash_code = """
-<div style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999;">
+    # ----------------- שלב 1: מסך טעינה -----------------
+    with placeholder.container():
+        splash_code = """
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999;">
 <div class="pulse-text" style="color: white; font-size: 55px; font-weight: 900; letter-spacing: 2px;">MyHR+</div>
 <div class="pulse-sub" style="color: #b3d4ff; font-size: 16px; margin-top: 10px;">מתחבר למערכות...</div>
 </div>
 """
-    st.markdown(splash_code, unsafe_allow_html=True)
+        st.markdown(splash_code, unsafe_allow_html=True)
     
-    # השהיה של 2.5 שניות בשביל האפקט
+    # המתנה של 2.5 שניות
     time.sleep(2.5)
-    
-    # עדכון המצב והעלאת הדשבורד
     st.session_state.app_loaded = True
+    
+    # ניקוי המסך ורענון לדשבורד
+    placeholder.empty()
     st.rerun()
 
-# אם האפליקציה נטענה - נציג את הדשבורד המלא
 else:
-    ui_code = """
-<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; overflow-x: hidden; background-color: #f0f2f6; padding-bottom: 90px; width: 100%; max-width: 480px; margin: 0 auto;">
-<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 45px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    # ----------------- שלב 2: האפליקציה עצמה -----------------
+    with placeholder.container():
+        ui_code = """
+<div style="background-color: #f0f2f6; padding-bottom: 100px; width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; direction: rtl; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 40px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">MyHR+</div>
 <div style="text-align: right; display: flex; align-items: flex-start; gap: 10px;">
 <div>
@@ -128,4 +143,4 @@ else:
 </div>
 </div>
 """
-    st.markdown(ui_code, unsafe_allow_html=True)
+        st.markdown(ui_code, unsafe_allow_html=True)
