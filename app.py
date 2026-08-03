@@ -50,7 +50,27 @@ components.html("""
         background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
-    .nav-item { text-align: center; font-weight: 600; font-size: 12px; }
+    .nav-item { text-align: center; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+    #modal-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(5, 44, 84, 0.45);
+        display: none; justify-content: center; align-items: center;
+        opacity: 0; transition: opacity 0.25s ease;
+    }
+    #modal-overlay.visible { display: flex; opacity: 1; }
+    .modal-box {
+        background: white; border-radius: 18px; padding: 30px 25px;
+        width: 80%; max-width: 320px; text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transform: scale(0.9); transition: transform 0.25s ease;
+    }
+    #modal-overlay.visible .modal-box { transform: scale(1); }
+    .modal-close-btn {
+        margin-top: 18px; background: #0a4682; color: white; border: none;
+        padding: 10px 24px; border-radius: 10px; font-weight: 700; font-size: 14px;
+        font-family: 'Assistant', sans-serif; cursor: pointer;
+    }
 </style>
 </head>
 <body>
@@ -133,13 +153,13 @@ components.html("""
 
     <!-- Bottom Nav -->
     <div style="position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 0 25px 0; display: flex; justify-content: space-around; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top: 1px solid #f0f0f0; z-index: 100; max-width: 480px; margin: 0 auto;">
-        <div class="nav-item" style="color: #94a3b8;">
+        <div class="nav-item nav-construction" style="color: #94a3b8;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><br>פרופיל
         </div>
-        <div class="nav-item" style="color: #94a3b8;">
+        <div class="nav-item nav-construction" style="color: #94a3b8;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg><br>מסמכים
         </div>
-        <div class="nav-item" style="color: #94a3b8;">
+        <div class="nav-item nav-construction" style="color: #94a3b8;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M12 8V4h-3a3 3 0 0 0 0 6h6a3 3 0 0 0 0-6h-3v4"></path></svg><br>הטבות
         </div>
         <div class="nav-item" style="color: #0a4682; font-weight: 800;">
@@ -150,7 +170,38 @@ components.html("""
 </div>
 </div>
 
+<!-- Under-construction modal -->
+<div id="modal-overlay">
+    <div class="modal-box">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#0a4682" stroke-width="1.5" style="margin-bottom: 10px;"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+        <div style="font-size: 18px; font-weight: 800; color: #0a4682;">בקרוב!</div>
+        <div style="font-size: 15px; color: #444; margin-top: 8px;">העמוד הזה נמצא בתהליך בנייה</div>
+        <button id="modal-close-btn" class="modal-close-btn">סגור</button>
+    </div>
+</div>
+
 <script>
+    var overlay = document.getElementById('modal-overlay');
+
+    function showUnderConstruction() {
+        overlay.classList.add('visible');
+    }
+    function closeModal() {
+        overlay.classList.remove('visible');
+    }
+
+    // Wire up the three "under construction" nav items.
+    var constructionItems = document.querySelectorAll('.nav-construction');
+    for (var i = 0; i < constructionItems.length; i++) {
+        constructionItems[i].addEventListener('click', showUnderConstruction);
+    }
+
+    // Close button + clicking the dark backdrop.
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+    });
+
     // Smooth splash -> app transition, done entirely client-side.
     // No Python rerun and no second HTTP round trip, so there is no
     // flash/blank-screen moment on slow mobile connections.
