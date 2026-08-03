@@ -86,7 +86,7 @@ components.html("""
     .header {
         position: relative; overflow: hidden; flex-shrink: 0;
         background: linear-gradient(160deg, var(--navy-light) 0%, var(--navy) 55%, var(--navy-deep) 100%);
-        color: #fff; padding: 24px 18px 28px 18px;
+        color: #fff; padding: 22px 18px 24px 18px;
         border-bottom-right-radius: 28px; border-bottom-left-radius: 28px;
         box-shadow: 0 8px 20px -6px rgba(6, 30, 58, 0.35);
     }
@@ -103,19 +103,26 @@ components.html("""
     .greeting-org  { font-size: 13px; font-weight: 600; opacity: 0.92; }
     .greeting-unit { font-size: 11.5px; opacity: 0.7; font-weight: 500; }
 
-    /* לוגו חדשני עם סמליל אבטחה, טלפון וחדשנות */
-    .brand-logo-container {
-        display: flex; flex-direction: column; align-items: flex-end; text-align: left;
+    /* לוגו גרפי מובנה המשלב צורה של סמל אפליקציה חדשני עם טלפון, אבטחה וחדשנות */
+    .brand-logo-badge {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 8px 12px; border-radius: 16px;
+        backdrop-filter: blur(8px);
     }
+    .logo-graphic {
+        width: 36px; height: 36px; background: linear-gradient(135deg, #1f9d6b 0%, #1a5691 100%);
+        border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; flex-shrink: 0;
+    }
+    .logo-text-col { display: flex; flex-direction: column; text-align: left; }
     .brand-main-text {
-        font-size: 30px; font-weight: 900; letter-spacing: 1px; line-height: 1; color: #ffffff;
+        font-size: 26px; font-weight: 900; letter-spacing: 0.5px; line-height: 1; color: #ffffff;
     }
     .brand-main-text span { color: #6fd9b5; }
-    .brand-icons-row {
-        display: flex; align-items: center; gap: 6px; margin-top: 4px; opacity: 0.9;
-    }
     .brand-tagline {
-        font-size: 9.5px; font-weight: 600; color: #b9d3ec; letter-spacing: 0.5px; margin-top: 2px;
+        font-size: 9px; font-weight: 700; color: #b9d3ec; letter-spacing: 0.5px; margin-top: 2px;
     }
 
     .view-container {
@@ -209,7 +216,7 @@ components.html("""
 
     <div id="app">
 
-        <!-- Header עם לוגו מוגדל ומשולב (טלפון, אבטחה, חדשנות) -->
+        <!-- Header עם לוגו גרפי מעוצב (כולל סמליל טלפון, מגן אבטחה וחדשנות) -->
         <div class="header">
             <svg class="header-arcs" width="200" height="200" viewBox="0 0 220 220" fill="none">
                 <circle cx="20" cy="20" r="40" stroke="white" stroke-width="1.4"/>
@@ -228,18 +235,20 @@ components.html("""
                     </div>
                 </div>
                 
-                <!-- לוגו מעוצב מחדש לפי הדרישה -->
-                <div class="brand-logo-container">
-                    <div dir="ltr" class="brand-main-text">MyHR<span>+</span></div>
-                    <div class="brand-icons-row" dir="ltr">
-                        <!-- אייקון טלפון נייד -->
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                        <!-- אייקון אבטחה (מגן) -->
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <!-- אייקון חדשנות (ניצוץ / הבקעה) -->
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2.2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                <!-- לוגו גרפי מרהיב המשלב את כל הדרישות -->
+                <div class="brand-logo-badge" dir="ltr">
+                    <div class="logo-graphic">
+                        <!-- אייקון משולב: מגן אבטחה שבתוכו טלפון וניצוץ חדשנות -->
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6fd9b5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <rect x="9" y="8" width="6" height="10" rx="1"/>
+                            <line x1="12" y1="15" x2="12" y2="15.01"/>
+                        </svg>
                     </div>
-                    <div class="brand-tagline" dir="ltr">MOBILE • SECURE • SMART</div>
+                    <div class="logo-text-col">
+                        <div class="brand-main-text">MyHR<span>+</span></div>
+                        <div class="brand-tagline">MOBILE • SECURE • SMART</div>
+                    </div>
                 </div>
             </div>
         </div>
