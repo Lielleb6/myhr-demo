@@ -1,57 +1,51 @@
 import streamlit as st
 import time
-import streamlit.components.v1 as components
 
-st.set_page_config(page_title="MyHR+ App", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="MyHR+ App", layout="centered", initial_sidebar_state="collapsed")
 
 if 'app_loaded' not in st.session_state:
     st.session_state.app_loaded = False
 
+# איפוס מוחלט של המסגרות והשוליים של סטרימלייט
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.stApp {
+    background-color: #f0f2f6 !important;
+}
+.block-container {
+    padding: 0 !important;
+    max-width: 480px !important;
+}
+#MainMenu { visibility: hidden; }
+header { display: none !important; }
+footer { display: none !important; }
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+.pulse-text { animation: pulse 1.5s infinite ease-in-out; }
+.pulse-sub { animation: pulse 1.5s infinite ease-in-out; animation-delay: 0.2s; }
+</style>
+""", unsafe_allow_html=True)
+
 if not st.session_state.app_loaded:
-    components.html("""
-    <!DOCTYPE html>
-    <html lang="he" dir="rtl">
-    <head>
-    <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-    body { margin: 0; padding: 0; background-color: #052c54; font-family: 'Assistant', sans-serif; overflow: hidden; }
-    @keyframes pulse {
-        0% { transform: scale(0.95); opacity: 0.8; }
-        50% { transform: scale(1.05); opacity: 1; }
-        100% { transform: scale(0.95); opacity: 0.8; }
-    }
-    .pulse-text { animation: pulse 1.5s infinite ease-in-out; }
-    .pulse-sub { animation: pulse 1.5s infinite ease-in-out; animation-delay: 0.2s; }
-    </style>
-    </head>
-    <body>
-    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    st.markdown("""
+    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; font-family: 'Assistant', sans-serif;">
         <div class="pulse-text" dir="ltr" style="color: white; font-size: 55px; font-weight: 900; letter-spacing: 2px;">MyHR+</div>
         <div class="pulse-sub" style="color: #b3d4ff; font-size: 18px; margin-top: 10px; font-weight: 600;">מתחבר למערכות...</div>
     </div>
-    </body>
-    </html>
-    """, height=800, scrolling=False)
+    """, unsafe_allow_html=True)
     
     time.sleep(2.5)
     st.session_state.app_loaded = True
     st.rerun()
 
 else:
-    components.html("""
-    <!DOCTYPE html>
-    <html lang="he" dir="rtl">
-    <head>
-    <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-    body { margin: 0; padding: 0; background-color: #f0f2f6; font-family: 'Assistant', sans-serif; overflow-x: hidden; }
-    </style>
-    </head>
-    <body>
-    <div style="background-color: #f0f2f6; padding-bottom: 120px; width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; direction: rtl;">
-        
+    app_html = """
+    <div style="background-color: #f0f2f6; padding-bottom: 110px; width: 100%; direction: rtl; font-family: 'Assistant', sans-serif;">
         <div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 40px 20px 45px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
             <div style="display: flex; align-items: flex-start; gap: 12px;">
                 <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
@@ -127,8 +121,7 @@ else:
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><br>פרופיל
             </div>
         </div>
-
     </div>
-    </body>
-    </html>
-    """, height=850, scrolling=True)
+    """
+    
+    st.markdown(app_html, unsafe_allow_html=True)
