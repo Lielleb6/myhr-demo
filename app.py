@@ -209,7 +209,6 @@ components.html("""
         display: flex; align-items: center; justify-content: space-between;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .card:active { transform: scale(0.98); }
 
     .card-label { font-size: 13.5px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
     .card-value { font-size: 22px; font-weight: 900; color: var(--ink); line-height: 1.1; }
@@ -220,7 +219,6 @@ components.html("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* כרטיס פיד דינמי (Smart Alert Pulse) */
     .pulse-alert-card {
         background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
         border: 1px solid #fde68a; border-radius: 20px; padding: 14px 16px;
@@ -228,7 +226,6 @@ components.html("""
         box-shadow: 0 4px 15px rgba(217, 119, 6, 0.08);
     }
 
-    /* סימולטור קריירה דינמי */
     .simulator-card {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         color: white; border-radius: 20px; padding: 18px; margin-bottom: 12px;
@@ -261,13 +258,16 @@ components.html("""
     }
     .cta-outline:active { background: #f0f4f8; }
 
-    /* צף עוזרת חכמה (Mira Chat Widget) */
+    /* ---------- כפתור צף עוזרת חכמה (Mira AI) עם באדג' AI ברור ---------- */
     .mira-fab {
-        position: absolute; bottom: 85px; left: 16px; background: var(--emerald);
-        color: white; width: 44px; height: 44px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
-        box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4); z-index: 90; font-weight: 900;
+        position: absolute; bottom: 85px; left: 16px; background: linear-gradient(135deg, #0d9488 0%, #144a8a 100%);
+        color: white; width: 52px; height: 52px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+        box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); z-index: 90; border: 2px solid rgba(255,255,255,0.4);
     }
+    .mira-fab-text { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; line-height: 1; }
+    .mira-fab-sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; margin-top: 1px; }
+
     .mira-modal {
         position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
         z-index: 200; display: none; align-items: flex-end;
@@ -277,6 +277,16 @@ components.html("""
         background: white; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px;
         padding: 20px; max-height: 70vh; display: flex; flex-direction: column;
     }
+
+    /* עריכת פרופיל */
+    .profile-input-group { display: flex; flex-direction: column; gap: 4px; width: 100%; margin-bottom: 12px; }
+    .profile-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); }
+    .profile-input {
+        background: #f8fafc; border: 1.5px solid var(--line); padding: 10px 14px;
+        border-radius: 12px; font-size: 14px; font-weight: 700; color: var(--ink); outline: none;
+        font-family: 'Assistant', sans-serif; width: 100%; transition: border-color 0.2s;
+    }
+    .profile-input:focus { border-color: var(--navy-light); background: #ffffff; }
 
     /* ---------- Bottom Navigation ---------- */
     .bottom-nav {
@@ -360,20 +370,6 @@ components.html("""
                 </div>
                 <div class="pref-check">✓</div>
             </div>
-            <div class="pref-item" onclick="togglePref(this, 'stocks')">
-                <div class="pref-content">
-                    <div class="pref-icon">📊</div>
-                    <span class="pref-label">מניות ואופציות</span>
-                </div>
-                <div class="pref-check">✓</div>
-            </div>
-            <div class="pref-item" onclick="togglePref(this, 'education')">
-                <div class="pref-content">
-                    <div class="pref-icon">💼</div>
-                    <span class="pref-label">קרן השתלמות</span>
-                </div>
-                <div class="pref-check">✓</div>
-            </div>
         </div>
 
         <button class="btn-primary" onclick="savePreferences()">כניסה לדשבורד האישי</button>
@@ -395,9 +391,9 @@ components.html("""
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <div style="text-align: right;">
-                        <div class="greeting-name">שלום, דניאל</div>
-                        <div class="greeting-org">אלביט מערכות</div>
-                        <div class="greeting-unit">חטיבה אווירית</div>
+                        <div class="greeting-name" id="header-name">שלום, דניאל</div>
+                        <div class="greeting-org" id="header-org">אלביט מערכות</div>
+                        <div class="greeting-unit" id="header-unit">חטיבה אווירית</div>
                     </div>
                 </div>
                 
@@ -426,7 +422,7 @@ components.html("""
             </div>
 
             <div id="home-cards-container">
-                <!-- נטען דינמית בהתאם לבחירת המשתמש -->
+                <!-- נטען דינמית -->
             </div>
         </div>
 
@@ -467,73 +463,6 @@ components.html("""
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                 </div>
             </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">תקציב אוכל (סיבוס)</div>
-                    <div class="card-value" dir="rtl">₪1,980 / חודש</div>
-                    <div class="card-sub">סבסוד יומי מלא לארוחות צהריים וחדר אוכל</div>
-                </div>
-                <div class="icon-badge" style="background: #e0f2fe;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">תווי קנייה ומתנות חג</div>
-                    <div class="card-value" dir="rtl">₪3,500 / שנה</div>
-                    <div class="card-sub">תווי קנייה בסכומים גבוהים בראש השנה ופסח</div>
-                </div>
-                <div class="icon-badge" style="background: var(--emerald-tint);">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="1.8"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">נופש ואירועי חברה</div>
-                    <div class="card-value" style="font-size: 18px; color: var(--emerald);">כלול במלואו</div>
-                    <div class="card-sub">ימי כיף מרוכזים, הופעות וטיול שנתי חטיבתי</div>
-                </div>
-                <div class="icon-badge" style="background: #e0f2fe;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">עבודה היברידית</div>
-                    <div class="card-value" style="font-size: 18px;">3 ימים מהמשרד</div>
-                    <div class="card-sub">כולל תקציב חד-פעמי להקמת משרד ביתי נוח</div>
-                </div>
-                <div class="icon-badge" style="background: #fef3c7;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">ביטוח בריאות מורחב</div>
-                    <div class="card-value" style="font-size: 18px; color: var(--emerald);">כיסוי משפחתי מלא</div>
-                    <div class="card-sub">כולל רפואה פרטית, ניתוחים ובדיקות סקר</div>
-                </div>
-                <div class="icon-badge" style="background: #e0f2fe;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                </div>
-            </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">ספורט ופנאי</div>
-                    <div class="card-value" style="font-size: 18px;">מנוי פרימיום</div>
-                    <div class="card-sub">מנוי למכון כושר רשתי והשתתפות בחוגים</div>
-                </div>
-                <div class="icon-badge" style="background: var(--emerald-tint);">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                </div>
-            </div>
-
         </div>
 
         <!-- VIEW 3: DOCUMENTS (מסמכים) -->
@@ -545,7 +474,7 @@ components.html("""
                 <div style="text-align: right;">
                     <div class="card-label">חוזה עבודה אישי</div>
                     <div class="card-value" style="font-size: 17px; color: var(--emerald);">חתום ומאושר</div>
-                    <div class="card-sub">גרסה מעודכנת - חטיבה אווירית</div>
+                    <div class="card-sub">גרסה מעודכנת</div>
                 </div>
                 <div class="icon-badge" style="background: #e0f2fe;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M12 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -554,54 +483,50 @@ components.html("""
 
             <div class="card">
                 <div style="text-align: right;">
-                    <div class="card-label">תלוש שכר - יולי 2026</div>
+                    <div class="card-label">תלוש שכר אחרון</div>
                     <div class="card-value" style="font-size: 17px;">חתום דיגיטלית</div>
-                    <div class="card-sub">הופק ב-01/08/2026</div>
+                    <div class="card-sub">הופק לאחרונה</div>
                 </div>
                 <div class="icon-badge" style="background: #e0f2fe;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
             </div>
-
-            <div class="card">
-                <div style="text-align: right;">
-                    <div class="card-label">אישור העסקה ושכר</div>
-                    <div class="card-value" style="font-size: 17px;">מוכן להורדה</div>
-                    <div class="card-sub">עבור בנק / משכנתא</div>
-                </div>
-                <div class="icon-badge" style="background: #e0f2fe;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                </div>
-            </div>
         </div>
 
-        <!-- VIEW 4: PROFILE (פרופיל) -->
+        <!-- VIEW 4: PROFILE (פרופיל ניתן לעריכה מלאה) -->
         <div id="view-profile" class="view-container">
-            <div class="eyebrow">פרטים אישיים</div>
-            <div class="section-title"><span>כרטיס עובד - אלביט מערכות</span></div>
+            <div class="eyebrow">פרטים אישיים והגדרות</div>
+            <div class="section-title"><span>כרטיס עובד וניהול פרופיל</span></div>
 
-            <div class="card" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span style="color: var(--ink-faint); font-weight: 600;">שם מלא:</span>
-                    <span style="font-weight: 800;">דניאל</span>
+            <div class="card" style="flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px;">
+                <div class="profile-input-group">
+                    <span class="profile-label">שם מלא:</span>
+                    <input type="text" id="input-name" class="profile-input" value="דניאל" oninput="saveProfileData()">
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span style="color: var(--ink-faint); font-weight: 600;">חטיבה:</span>
-                    <span style="font-weight: 800;">חטיבה אווירית</span>
+                <div class="profile-input-group">
+                    <span class="profile-label">חברה מעסיקה:</span>
+                    <input type="text" id="input-org" class="profile-input" value="אלביט מערכות" oninput="saveProfileData()">
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span style="color: var(--ink-faint); font-weight: 600;">מספר עובד:</span>
-                    <span style="font-weight: 800;" dir="ltr">EL-88492</span>
+                <div class="profile-input-group">
+                    <span class="profile-label">חטיבה / מחלקה:</span>
+                    <input type="text" id="input-unit" class="profile-input" value="חטיבה אווירית" oninput="saveProfileData()">
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 100%;">
-                    <span style="color: var(--ink-faint); font-weight: 600;">סטטוס העסקה:</span>
-                    <span style="font-weight: 800; color: var(--emerald);">עובד קבוע</span>
+                <div class="profile-input-group">
+                    <span class="profile-label">מספר עובד:</span>
+                    <input type="text" id="input-id" class="profile-input" value="EL-88492" oninput="saveProfileData()">
+                </div>
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--line);">
+                    <span style="color: var(--ink-faint); font-weight: 600; font-size: 13px;">סטטוס העסקה:</span>
+                    <span style="font-weight: 800; color: var(--emerald); font-size: 13.5px;">עובד קבוע (תקף)</span>
                 </div>
             </div>
         </div>
 
-        <!-- כפתור צף לעוזרת חכמה (Mira AI) -->
-        <div class="mira-fab" onclick="toggleMira(true)" title="Mira AI">🤖</div>
+        <!-- כפתור צף לעוזרת חכמה (Mira AI מעוצב) -->
+        <div class="mira-fab" onclick="toggleMira(true)" title="Mira AI">
+            <div class="mira-fab-text">AI</div>
+            <div class="mira-fab-sub">Mira</div>
+        </div>
 
         <!-- מודאל צ'אט עוזרת חכמה -->
         <div class="mira-modal" id="mira-modal">
@@ -611,11 +536,11 @@ components.html("""
                     <div style="cursor: pointer; font-weight: 700; color: var(--ink-faint); font-size: 18px;" onclick="toggleMira(false)">✕</div>
                 </div>
                 <div style="background: #f8fafc; border-radius: 14px; padding: 12px; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.4;">
-                    היי דניאל! אני מירה, העוזרת החכמה שלך באלביט. איך אוכל לעזור לך היום?
+                    היי! אני מירה, העוזרת החכמה שלך. איך אוכל לסייע לך בנתוני החברה וההטבות היום?
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('יש לך 12 ימי חופשה פנויים שניתן לנצל עד סוף השנה.')">כמה ימי חופשה נשארו לי?</div>
-                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('קרן ההשתלמות שלך מופקדת אוטומטית בכל 1 לחודש בהפרשות מקסימליות.')">איפה קרן ההשתלמות שלי?</div>
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('יש לך 12 ימי חופשה פנויים שניתן לנצל עד סוף השנה האזרחית.')">כמה ימי חופשה נשארו לי?</div>
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('קרן ההשתלמות שלך מופקדת אוטומטית בכל 1 לחודש בהפרשות המקסימליות.')">איפה קרן ההשתלמות שלי?</div>
                 </div>
                 <div id="mira-response" style="margin-top: 12px; font-weight: 700; color: var(--emerald); font-size: 13.5px;"></div>
             </div>
@@ -670,6 +595,43 @@ components.html("""
 
     function resetOnboarding() {
         document.getElementById('onboarding').classList.add('active');
+    }
+
+    function saveProfileData() {
+        var name = document.getElementById('input-name').value;
+        var org = document.getElementById('input-org').value;
+        var unit = document.getElementById('input-unit').value;
+        var id = document.getElementById('input-id').value;
+
+        var profile = { name: name, org: org, unit: unit, id: id };
+        localStorage.setItem('myhr_profile', JSON.stringify(profile));
+        updateHeaderDisplay();
+    }
+
+    function loadProfileData() {
+        var saved = localStorage.getItem('myhr_profile');
+        if (saved) {
+            var profile = JSON.parse(saved);
+            if (document.getElementById('input-name')) document.getElementById('input-name').value = profile.name || 'דניאל';
+            if (document.getElementById('input-org')) document.getElementById('input-org').value = profile.org || 'אלביט מערכות';
+            if (document.getElementById('input-unit')) document.getElementById('input-unit').value = profile.unit || 'חטיבה אווירית';
+            if (document.getElementById('input-id')) document.getElementById('input-id').value = profile.id || 'EL-88492';
+        }
+        updateHeaderDisplay();
+    }
+
+    function updateHeaderDisplay() {
+        var saved = localStorage.getItem('myhr_profile');
+        var name = 'דניאל', org = 'אלביט מערכות', unit = 'חטיבה אווירית';
+        if (saved) {
+            var profile = JSON.parse(saved);
+            name = profile.name || name;
+            org = profile.org || org;
+            unit = profile.unit || unit;
+        }
+        document.getElementById('header-name').innerText = 'שלום, ' + name;
+        document.getElementById('header-org').innerText = org;
+        document.getElementById('header-unit').innerText = unit;
     }
 
     function toggleMira(show) {
@@ -781,30 +743,6 @@ components.html("""
                     </div>
                     <div class="cta-outline" onclick="switchView('documents')">צפייה בתלוש האחרון</div>
                 </div>
-            `,
-            stocks: `
-                <div class="card">
-                    <div style="text-align: right;">
-                        <div class="card-label">מניות ואופציות</div>
-                        <div class="card-value" style="font-size: 20px; color: var(--emerald);">1,500 יחידות</div>
-                        <div class="card-sub">חלק מהרווחים ושותפות עתידית בחברה</div>
-                    </div>
-                    <div class="icon-badge" style="background: var(--emerald-tint);">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                    </div>
-                </div>
-            `,
-            education: `
-                <div class="card">
-                    <div style="text-align: right;">
-                        <div class="card-label">קרן השתלמות</div>
-                        <div class="card-value" dir="rtl">₪42,100</div>
-                        <div class="card-sub">הפקדות מעסיק מוגדלות מהיום הראשון</div>
-                    </div>
-                    <div class="icon-badge" style="background: #e0f2fe;">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    </div>
-                </div>
             `
         };
 
@@ -841,6 +779,7 @@ components.html("""
             app.classList.add('visible');
             setTimeout(function () {
                 splash.style.display = 'none';
+                loadProfileData();
                 
                 if (!localStorage.getItem('myhr_prefs')) {
                     document.getElementById('onboarding').classList.add('active');
