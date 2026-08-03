@@ -3,15 +3,12 @@ import time
 
 st.set_page_config(page_title="MyHR+ App", layout="wide", initial_sidebar_state="collapsed")
 
-# הגדרת משתנה מצב כדי לדעת אם צריך להציג את מסך הטעינה
 if 'app_loaded' not in st.session_state:
     st.session_state.app_loaded = False
 
-# ייבוא פונט עברי יפה (Assistant) ואיפוס שוליים
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* איפוס גוף הדפדפן */
 html, body {
     margin: 0 !important;
     padding: 0 !important;
@@ -19,7 +16,6 @@ html, body {
     overflow-x: hidden;
 }
 
-/* ביטול הרווח העליון של Streamlit */
 .block-container, div[data-testid="stAppViewBlockContainer"] {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
@@ -29,12 +25,10 @@ html, body {
     max-width: 100% !important;
 }
 
-/* העלמת תפריטים מיותרים */
 #MainMenu { visibility: hidden; }
 header { display: none !important; }
 footer { display: none !important; }
 
-/* האנימציה של מסך הטעינה */
 @keyframes pulse {
     0% { transform: scale(0.95); opacity: 0.8; }
     50% { transform: scale(1.05); opacity: 1; }
@@ -45,11 +39,9 @@ footer { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# שימוש בקונטיינר מתחלף
 placeholder = st.empty()
 
 if not st.session_state.app_loaded:
-    # ----------------- שלב 1: מסך טעינה -----------------
     with placeholder.container():
         splash_code = """
 <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999; font-family: 'Assistant', sans-serif;">
@@ -59,21 +51,17 @@ if not st.session_state.app_loaded:
 """
         st.markdown(splash_code, unsafe_allow_html=True)
     
-    # המתנה של 2.5 שניות
     time.sleep(2.5)
     st.session_state.app_loaded = True
-    
-    # ניקוי המסך ורענון לדשבורד
     placeholder.empty()
     st.rerun()
 
 else:
-    # ----------------- שלב 2: האפליקציה עצמה -----------------
     with placeholder.container():
         ui_code = """
 <div style="background-color: #f0f2f6; padding-bottom: 100px; width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; direction: rtl; font-family: 'Assistant', sans-serif;">
-<!-- חלק עליון - Header -->
-<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 45px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<!-- חלק עליון - Header כחול נקי בלי הכותרת -->
+<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 45px 20px 45px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <div style="display: flex; align-items: flex-start; gap: 12px;">
 <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
 <div style="text-align: right;">
@@ -85,8 +73,9 @@ else:
 <div dir="ltr" style="font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">MyHR+</div>
 </div>
 
-<div style="margin-top: -30px; padding: 0 15px; position: relative; z-index: 10;">
-<div style="text-align: right; color: #111; font-size: 22px; font-weight: 900; margin-bottom: 15px;">הדשבורד האישי שלי</div>
+<!-- אזור תוכן לבן - הכותרת עכשיו יושבת כאן מעל הכרטיסיות בצבע כחול -->
+<div style="padding: 20px 15px 0 15px; position: relative; z-index: 10;">
+<div style="text-align: right; color: #0a4682; font-size: 22px; font-weight: 900; margin-bottom: 15px;">הדשבורד האישי שלי</div>
 
 <!-- כרטיסיית ימי חופשה -->
 <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
