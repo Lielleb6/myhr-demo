@@ -70,22 +70,6 @@ components.html("""
         overscroll-behavior: none;
     }
 
-    @keyframes pulse {
-        0% { transform: scale(0.96); opacity: 0.75; }
-        50% { transform: scale(1.03); opacity: 1; }
-        100% { transform: scale(0.96); opacity: 0.75; }
-    }
-    .pulse-text { animation: pulse 1.6s infinite ease-in-out; }
-    .pulse-sub  { animation: pulse 1.6s infinite ease-in-out; animation-delay: 0.2s; }
-
-    #splash {
-        position: absolute; inset: 0; z-index: 999;
-        background: radial-gradient(120% 90% at 50% 0%, var(--navy-light) 0%, var(--navy) 45%, var(--navy-deep) 100%);
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        transition: opacity 0.4s ease-out, visibility 0.4s;
-    }
-    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
     /* ---------- אשף התאמה אישית פרימיום (Onboarding) ---------- */
     #onboarding {
         position: absolute; inset: 0; z-index: 990; background: #ffffff;
@@ -135,8 +119,7 @@ components.html("""
     }
     .btn-primary:active { transform: scale(0.98); }
 
-    #app { opacity: 0; transition: opacity 0.4s ease-in; height: 100%; display: flex; flex-direction: column; }
-    #app.visible { opacity: 1; }
+    #app { height: 100%; display: flex; flex-direction: column; }
 
     /* ---------- Header ---------- */
     .header {
@@ -337,12 +320,6 @@ components.html("""
 
 <div id="app-wrapper" style="width: 100%; height: 100%; display: flex; justify-content: center;">
 <div class="shell">
-
-    <!-- Splash Screen -->
-    <div id="splash">
-        <div class="pulse-text" dir="ltr" style="color: white; font-size: 52px; font-weight: 900; letter-spacing: 1px;">MyHR<span style="color:#5eead4;">+</span></div>
-        <div class="pulse-sub" style="color: #94a3b8; font-size: 15px; margin-top: 10px; font-weight: 600;">טוען סביבת עבודה מאובטחת...</div>
-    </div>
 
     <!-- Onboarding: אשף בחירה אישי פרימיום -->
     <div id="onboarding">
@@ -651,12 +628,10 @@ components.html("""
 
         var history = document.getElementById('chat-history');
         
-        // הוספת הודעת משתמש
         history.innerHTML += '<div class="chat-bubble user">' + text + '</div>';
         inputField.value = '';
         history.scrollTop = history.scrollHeight;
 
-        // מענה חכם מדורג מבוסס מילות מפתח
         setTimeout(function() {
             var reply = "בדקתי עבורך במערכות החברה. בהתאם לנתוני הפרופיל והזכויות שלך, הנושא מטופל מול מחלקת משאבי אנוש ומופיע באזור האישי.";
             
@@ -799,24 +774,15 @@ components.html("""
         document.getElementById('nav-' + viewName).classList.add('active');
     }
 
-    setTimeout(function () {
-        var splash = document.getElementById('splash');
-        var app = document.getElementById('app');
-        if (splash && app) {
-            splash.classList.add('hidden');
-            app.classList.add('visible');
-            setTimeout(function () {
-                splash.style.display = 'none';
-                loadProfileData();
-                
-                if (!localStorage.getItem('myhr_prefs')) {
-                    document.getElementById('onboarding').classList.add('active');
-                } else {
-                    buildDynamicDashboard();
-                }
-            }, 400);
+    // אתחול מיידי בעליית הדף ללא תקיעות
+    window.onload = function() {
+        loadProfileData();
+        if (!localStorage.getItem('myhr_prefs')) {
+            document.getElementById('onboarding').classList.add('active');
+        } else {
+            buildDynamicDashboard();
         }
-    }, 1500);
+    };
 </script>
 
 </body>
