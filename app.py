@@ -34,6 +34,7 @@ components.html("""
         --emerald:     #0d9488;
         --emerald-tint:#ccfbf1;
         --line:        #e2e8f0;
+        --accent-gold: #d97706;
     }
     * { 
         box-sizing: border-box; 
@@ -206,6 +207,7 @@ components.html("""
         margin-bottom: 12px; border: 1px solid var(--line);
         box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
         display: flex; align-items: center; justify-content: space-between;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .card-label { font-size: 13.5px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
@@ -256,7 +258,7 @@ components.html("""
     }
     .cta-outline:active { background: #f0f4f8; }
 
-    /* ---------- כפתור צף לעוזרת חכמה (Mira AI) ---------- */
+    /* ---------- כפתור צף עוזרת חכמה (Mira AI) עם באדג' AI ברור ---------- */
     .mira-fab {
         position: absolute; bottom: 85px; left: 16px; background: linear-gradient(135deg, #0d9488 0%, #144a8a 100%);
         color: white; width: 52px; height: 52px; border-radius: 50%;
@@ -266,7 +268,6 @@ components.html("""
     .mira-fab-text { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; line-height: 1; }
     .mira-fab-sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; margin-top: 1px; }
 
-    /* מודאל צ'אט חי עם AI */
     .mira-modal {
         position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
         z-index: 200; display: none; align-items: flex-end;
@@ -274,29 +275,10 @@ components.html("""
     .mira-modal.active { display: flex; }
     .mira-sheet {
         background: white; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px;
-        padding: 20px; max-height: 75vh; height: 75vh; display: flex; flex-direction: column;
-    }
-    .chat-history {
-        flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; padding-right: 4px;
-    }
-    .chat-bubble {
-        padding: 12px 14px; border-radius: 14px; font-size: 13.5px; line-height: 1.4; max-width: 85%; word-break: break-word;
-    }
-    .chat-bubble.ai { background: #f1f5f9; color: var(--ink); align-self: flex-start; border-bottom-left-radius: 4px; }
-    .chat-bubble.user { background: var(--navy); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-
-    .chat-input-row { display: flex; gap: 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
-    .chat-input {
-        flex: 1; background: #f8fafc; border: 1.5px solid var(--line); padding: 12px 14px;
-        border-radius: 14px; font-size: 14px; outline: none; font-family: 'Assistant', sans-serif;
-    }
-    .chat-input:focus { border-color: var(--navy-light); background: white; }
-    .chat-send-btn {
-        background: var(--navy); color: white; border: none; width: 44px; height: 44px;
-        border-radius: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        padding: 20px; max-height: 70vh; display: flex; flex-direction: column;
     }
 
-    /* פרופיל עריכה */
+    /* עריכת פרופיל */
     .profile-input-group { display: flex; flex-direction: column; gap: 4px; width: 100%; margin-bottom: 12px; }
     .profile-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); }
     .profile-input {
@@ -431,7 +413,7 @@ components.html("""
             </div>
         </div>
 
-        <!-- VIEW 1: HOME -->
+        <!-- VIEW 1: HOME (בית עם ווידג'טים דינמיים) -->
         <div id="view-home" class="view-container active-view">
             <div class="eyebrow">סקירה כללית</div>
             <div class="section-title">
@@ -439,10 +421,12 @@ components.html("""
                 <span style="font-size: 11.5px; color: var(--navy-light); cursor: pointer; font-weight: 700;" onclick="resetOnboarding()">שינוי העדפות ⚙️</span>
             </div>
 
-            <div id="home-cards-container"></div>
+            <div id="home-cards-container">
+                <!-- נטען דינמית -->
+            </div>
         </div>
 
-        <!-- VIEW 2: BENEFITS -->
+        <!-- VIEW 2: BENEFITS (הטבות) -->
         <div id="view-benefits" class="view-container">
             <div class="eyebrow">רווחה ותנאים</div>
             <div class="section-title"><span>ההטבות והתנאים שלך</span></div>
@@ -468,9 +452,20 @@ components.html("""
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
             </div>
+
+            <div class="card">
+                <div style="text-align: right;">
+                    <div class="card-label">בונוס שנתי מובטח</div>
+                    <div class="card-value">עד 3 משכורות</div>
+                    <div class="card-sub">על בסיס עמידה ביעדי החברה והאינדיבידואל</div>
+                </div>
+                <div class="icon-badge" style="background: #fef3c7;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </div>
+            </div>
         </div>
 
-        <!-- VIEW 3: DOCUMENTS -->
+        <!-- VIEW 3: DOCUMENTS (מסמכים) -->
         <div id="view-documents" class="view-container">
             <div class="eyebrow">ארכיון דיגיטלי</div>
             <div class="section-title"><span>חוזים, תלושים ואישורים</span></div>
@@ -485,9 +480,20 @@ components.html("""
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M12 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 </div>
             </div>
+
+            <div class="card">
+                <div style="text-align: right;">
+                    <div class="card-label">תלוש שכר אחרון</div>
+                    <div class="card-value" style="font-size: 17px;">חתום דיגיטלית</div>
+                    <div class="card-sub">הופק לאחרונה</div>
+                </div>
+                <div class="icon-badge" style="background: #e0f2fe;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+            </div>
         </div>
 
-        <!-- VIEW 4: PROFILE -->
+        <!-- VIEW 4: PROFILE (פרופיל ניתן לעריכה מלאה) -->
         <div id="view-profile" class="view-container">
             <div class="eyebrow">פרטים אישיים והגדרות</div>
             <div class="section-title"><span>כרטיס עובד וניהול פרופיל</span></div>
@@ -516,28 +522,27 @@ components.html("""
             </div>
         </div>
 
-        <!-- כפתור צף לעוזרת חכמה (Mira AI) -->
+        <!-- כפתור צף לעוזרת חכמה (Mira AI מעוצב) -->
         <div class="mira-fab" onclick="toggleMira(true)" title="Mira AI">
             <div class="mira-fab-text">AI</div>
             <div class="mira-fab-sub">Mira</div>
         </div>
 
-        <!-- מודאל צ'אט חי עם AI -->
+        <!-- מודאל צ'אט עוזרת חכמה -->
         <div class="mira-modal" id="mira-modal">
             <div class="mira-sheet">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <div style="font-weight: 900; font-size: 18px; color: var(--navy-deep);">Mira AI • עוזרת HR חכמה</div>
+                    <div style="font-weight: 900; font-size: 18px; color: var(--navy-deep);">Mira AI • עוזרת HR</div>
                     <div style="cursor: pointer; font-weight: 700; color: var(--ink-faint); font-size: 18px;" onclick="toggleMira(false)">✕</div>
                 </div>
-                
-                <div class="chat-history" id="chat-history">
-                    <div class="chat-bubble ai">היי! אני מירה, העוזרת החכמה שלך. אפשר לשאול אותי כל שעה על ימי חופשה, שכר, תנאים או נהלי חברה ואענה לך מיד!</div>
+                <div style="background: #f8fafc; border-radius: 14px; padding: 12px; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.4;">
+                    היי! אני מירה, העוזרת החכמה שלך. איך אוכל לסייע לך בנתוני החברה וההטבות היום?
                 </div>
-
-                <div class="chat-input-row">
-                    <input type="text" id="chat-input-field" class="chat-input" placeholder="הקלד שאלה למירה..." onkeypress="handleChatKey(event)">
-                    <button class="chat-send-btn" onclick="sendChatMessage()">שלח</button>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('יש לך 12 ימי חופשה פנויים שניתן לנצל עד סוף השנה האזרחית.')">כמה ימי חופשה נשארו לי?</div>
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;" onclick="miraReply('קרן ההשתלמות שלך מופקדת אוטומטית בכל 1 לחודש בהפרשות המקסימליות.')">איפה קרן ההשתלמות שלי?</div>
                 </div>
+                <div id="mira-response" style="margin-top: 12px; font-weight: 700; color: var(--emerald); font-size: 13.5px;"></div>
             </div>
         </div>
 
@@ -635,45 +640,12 @@ components.html("""
             modal.classList.add('active');
         } else {
             modal.classList.remove('active');
+            document.getElementById('mira-response').innerText = '';
         }
     }
 
-    function handleChatKey(e) {
-        if (e.key === 'Enter') {
-            sendChatMessage();
-        }
-    }
-
-    function sendChatMessage() {
-        var inputField = document.getElementById('chat-input-field');
-        var text = inputField.value.trim();
-        if (!text) return;
-
-        var history = document.getElementById('chat-history');
-        
-        // הוספת הודעת משתמש
-        history.innerHTML += '<div class="chat-bubble user">' + text + '</div>';
-        inputField.value = '';
-        history.scrollTop = history.scrollHeight;
-
-        // מענה חכם מדורג מבוסס מילות מפתח
-        setTimeout(function() {
-            var reply = "בדקתי עבורך במערכות החברה. בהתאם לנתוני הפרופיל והזכויות שלך, הנושא מטופל מול מחלקת משאבי אנוש ומופיע באזור האישי.";
-            
-            var lower = text.toLowerCase();
-            if (lower.includes('חופש') || lower.includes('ימים')) {
-                reply = "יש לך כרגע 12 ימי חופשה צבורים פנויים לניצול עד סוף השנה האזרחית הנוכחית.";
-            } else if (lower.includes('שכר') || lower.includes('תלוש')) {
-                reply = "תלוש השכר האחרון שלך הופק והועבר לארכיון הדיגיטלי תחת לשונית 'מסמכים'.";
-            } else if (lower.includes('קרן') || lower.includes('השתלמות')) {
-                reply = "קרן ההשתלמות שלך פעילה ומופקדות אליה ההפרשות המקסימליות מדי חודש (היתרה הנוכחית עומדת על כ-₪42,100).";
-            } else if (lower.includes('סיבוס') || lower.includes('אוכל')) {
-                reply = "תקציב הסיבוס שלך מעודכן בסך 90 ש\"ח ליום עבודה. היתרה החודשית זמינה בדשבורד הבית.";
-            }
-
-            history.innerHTML += '<div class="chat-bubble ai">' + reply + '</div>';
-            history.scrollTop = history.scrollHeight;
-        }, 600);
+    function miraReply(text) {
+        document.getElementById('mira-response').innerText = 'תשובת Mira: ' + text;
     }
 
     function updateSimulator(val) {
