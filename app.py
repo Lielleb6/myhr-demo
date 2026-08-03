@@ -1,34 +1,60 @@
 import streamlit as st
+import time
 
 st.set_page_config(page_title="MyHR+ App", layout="centered", initial_sidebar_state="collapsed")
 
-# הזרקת פקודות JS ו-CSS כדי "לעבוד" על הדפדפן שיתנהג כמו אפליקציה מותקנת
+# הגדרת משתנה מצב (Session State) כדי לבדוק אם האפליקציה כבר נטענה
+if 'app_loaded' not in st.session_state:
+    st.session_state.app_loaded = False
+
 st.markdown("""
 <style>
-/* נעילת האפליקציה לממדי המסך ומניעת גלילה חיצונית של הדפדפן */
 html, body, [data-testid="stAppViewContainer"] {
     width: 100vw;
     height: 100vh;
     overflow: hidden !important; 
     margin: 0;
     padding: 0;
-    touch-action: pan-y; /* מונע זום-אין בטעות בלחיצה כפולה */
-    -webkit-tap-highlight-color: transparent; /* מעלים את הריבוע הכחול בלחיצה על כפתורים */
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
 }
-
-/* איפוס המרווחים של Streamlit */
 .block-container { padding: 0 !important; max-width: 100% !important; margin: auto !important; }
 header { display: none !important; }
 footer { display: none !important; }
-
-/* הגדרת רקע כללי */
 .stApp { direction: rtl; background-color: #f0f2f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
 ::-webkit-scrollbar { display: none; }
+
+/* אנימציית הפעימה של מסך הטעינה */
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+.pulse-text { animation: pulse 1.5s infinite ease-in-out; }
+.pulse-sub { animation: pulse 1.5s infinite ease-in-out; animation-delay: 0.2s; }
 </style>
 """, unsafe_allow_html=True)
 
-# הממשק עצמו מוגדר עכשיו בתוך קונטיינר שנגלל בעצמו ולא גולל את כל האתר
-ui_code = """
+# אם האפליקציה עדיין לא נטענה - נציג את מסך הפתיחה
+if not st.session_state.app_loaded:
+    splash_code = """
+<div style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999999;">
+<div class="pulse-text" style="color: white; font-size: 55px; font-weight: 900; letter-spacing: 2px;">MyHR+</div>
+<div class="pulse-sub" style="color: #b3d4ff; font-size: 16px; margin-top: 10px;">מתחבר למערכות...</div>
+</div>
+"""
+    st.markdown(splash_code, unsafe_allow_html=True)
+    
+    # השהיה של 2.5 שניות בשביל האפקט
+    time.sleep(2.5)
+    
+    # עדכון המצב והעלאת הדשבורד
+    st.session_state.app_loaded = True
+    st.rerun()
+
+# אם האפליקציה נטענה - נציג את הדשבורד המלא
+else:
+    ui_code = """
 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; overflow-x: hidden; background-color: #f0f2f6; padding-bottom: 90px; width: 100%; max-width: 480px; margin: 0 auto;">
 <div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 45px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">MyHR+</div>
@@ -102,5 +128,4 @@ ui_code = """
 </div>
 </div>
 """
-
-st.markdown(ui_code, unsafe_allow_html=True)
+    st.markdown(ui_code, unsafe_allow_html=True)
