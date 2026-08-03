@@ -2,19 +2,35 @@ import streamlit as st
 
 st.set_page_config(page_title="MyHR+ App", layout="centered", initial_sidebar_state="collapsed")
 
+# הזרקת פקודות JS ו-CSS כדי "לעבוד" על הדפדפן שיתנהג כמו אפליקציה מותקנת
 st.markdown("""
 <style>
-.block-container { padding: 0 !important; max-width: 480px !important; margin: auto !important; }
+/* נעילת האפליקציה לממדי המסך ומניעת גלילה חיצונית של הדפדפן */
+html, body, [data-testid="stAppViewContainer"] {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important; 
+    margin: 0;
+    padding: 0;
+    touch-action: pan-y; /* מונע זום-אין בטעות בלחיצה כפולה */
+    -webkit-tap-highlight-color: transparent; /* מעלים את הריבוע הכחול בלחיצה על כפתורים */
+}
+
+/* איפוס המרווחים של Streamlit */
+.block-container { padding: 0 !important; max-width: 100% !important; margin: auto !important; }
 header { display: none !important; }
 footer { display: none !important; }
+
+/* הגדרת רקע כללי */
 .stApp { direction: rtl; background-color: #f0f2f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; user-select: none; }
 ::-webkit-scrollbar { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
+# הממשק עצמו מוגדר עכשיו בתוך קונטיינר שנגלל בעצמו ולא גולל את כל האתר
 ui_code = """
-<div style="position: relative; width: 100%; min-height: 100vh; background-color: #f0f2f6; padding-bottom: 80px;">
-<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 40px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; overflow-x: hidden; background-color: #f0f2f6; padding-bottom: 90px; width: 100%; max-width: 480px; margin: 0 auto;">
+<div style="background: linear-gradient(180deg, #0a4682 0%, #052c54 100%); color: white; padding: 45px 20px 60px 20px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <div style="font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">MyHR+</div>
 <div style="text-align: right; display: flex; align-items: flex-start; gap: 10px;">
 <div>
@@ -70,7 +86,7 @@ ui_code = """
 <div style="width: 100%; text-align: center; border: 1.5px solid #0a4682; color: #0a4682; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 14px;">צפייה בתלושים נוספים</div>
 </div>
 </div>
-<div style="position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 0 20px 0; display: flex; justify-content: space-around; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top: 1px solid #f0f0f0; z-index: 100;">
+<div style="position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 0 25px 0; display: flex; justify-content: space-around; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); border-top: 1px solid #f0f0f0; z-index: 100; max-width: 480px; margin: 0 auto;">
 <div style="text-align: center; color: #0a4682; font-weight: 800; font-size: 11px;">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><br>בית
 </div>
